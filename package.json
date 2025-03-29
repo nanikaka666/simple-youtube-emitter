@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/nanikaka666/simple-youtube-emitter/issues"
   },
-  "homepage": "https://github.com/nanikaka666/simple-youtube-emitter#readme"
+  "homepage": "https://github.com/nanikaka666/simple-youtube-emitter#readme",
+  "devDependencies": {
+    "@types/node": "^22.13.14"
+  }
 }
