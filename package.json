@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/nanikaka666/simple-youtube-emitter#readme",
   "devDependencies": {
-    "@types/node": "^22.13.14"
+    "@types/node": "^22.13.14",
+    "typescript": "^5.8.2"
   }
 }
