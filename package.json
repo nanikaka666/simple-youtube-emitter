@@ -1,0 +1,20 @@
+{
+  "name": "simple-youtube-emitter",
+  "version": "0.1.0",
+  "description": "This simple module emit events when raised up number of your subscribers and favorites of live-streaming at your YouTube channel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nanikaka666/simple-youtube-emitter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nanikaka666/simple-youtube-emitter/issues"
+  },
+  "homepage": "https://github.com/nanikaka666/simple-youtube-emitter#readme"
+}
