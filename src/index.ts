@@ -32,6 +32,26 @@ interface VideoApiResponse {
   ];
 }
 
+interface ChannelStatistics {
+  channelId: string;
+  channelTitle: string;
+  subscriberCount: number;
+}
+
+interface ChannelStatisticsResponse {
+  subscriberCount: number;
+}
+
+interface ChannelSnippetResponse {
+  title: string;
+}
+
+interface ChannelApiResponse {
+  items: [
+    { snippet: ChannelSnippetResponse; statistics: ChannelStatisticsResponse }
+  ];
+}
+
 class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   private async getVideoId(channelId: string): Promise<string | undefined> {
     const livePageUrl =
@@ -41,7 +61,6 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
     const response = await fetch(livePageUrl);
     const body = await response.text();
     const parsedBody = parse(body);
-    // console.log(body);
     const element = parsedBody.querySelector('link[rel="canonical"]');
     if (element === null) {
       this.emit(
@@ -100,6 +119,32 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
     };
   }
 
+  private async getChannelStatistics(
+    channelId: string
+  ): Promise<ChannelStatistics> {
+    const channelApiUrl = "https://www.googleapis.com/youtube/v3/channels";
+    const paramsBase = {
+      key: credential,
+      part: ["snippet", "statistics"].join(","),
+    };
+
+    const params =
+      channelId.charAt(0) === "@"
+        ? { ...paramsBase, forHandle: channelId }
+        : { ...paramsBase, id: channelId };
+    const query = new URLSearchParams(params);
+    const url = `${channelApiUrl}?${query}`;
+
+    const res = await fetch(url);
+    const json = (await res.json()) as ChannelApiResponse;
+
+    return {
+      channelId: channelId,
+      channelTitle: json.items[0].snippet.title,
+      subscriberCount: Number(json.items[0].statistics.subscriberCount),
+    };
+  }
+
   async watch(
     channelId: string,
     intervalMilliSeconds: number
@@ -111,6 +156,9 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
       }
       const videoStatistics = await this.getVideoStatistics(videoId);
       console.log(videoStatistics);
+
+      const channelStatistics = await this.getChannelStatistics(channelId);
+      console.log(channelStatistics);
 
       this.emit("start");
       return true;
