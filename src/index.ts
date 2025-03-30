@@ -71,7 +71,9 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
     if (matchResult === null) {
       this.emit(
         "error",
-        new Error("Content of href attribute is maybe changed.")
+        new Error(
+          "This channel has no live-streaming or upcoming live, or content of href attribute is maybe changed."
+        )
       );
       return undefined;
     }
