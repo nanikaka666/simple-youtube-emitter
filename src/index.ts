@@ -1,13 +1,10 @@
 import { argv } from "process";
-import { SimpleYoutubeEventEmitter } from "./SimpleYoutubeEventEmitter";
+import { SimpleYoutubeEmitter } from "./SimpleYoutubeEmitter";
 
 const credential = argv[2];
-console.log(credential);
-
 const channelId = argv[3];
-console.log("ChannelId: ", channelId);
 
-const simple = new SimpleYoutubeEventEmitter(credential);
+const simple = new SimpleYoutubeEmitter(credential, channelId);
 simple.on("error", (err) => {
   console.log(err.message);
 });

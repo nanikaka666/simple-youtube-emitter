@@ -10,11 +10,13 @@ import {
   VideoStatistics,
 } from "../types";
 
-export class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
+export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #credential: string;
-  constructor(credential: string) {
+  readonly #channelId: string;
+  constructor(credential: string, channelId: string) {
     super();
     this.#credential = credential;
+    this.#channelId = channelId;
   }
   private async getVideoId(channelId: string): Promise<string | undefined> {
     const livePageUrl =
