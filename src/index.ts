@@ -13,24 +13,36 @@ type SimpleYoutubeEvent = {
 };
 
 interface VideoStatistics {
+  videoId: string;
+  videoTitle: string;
+  likeCount: number;
+}
+
+interface VideoStatisticsResponse {
   likeCount: string;
 }
 
-interface VideoSnippet {
+interface VideoSnippetResponse {
   title: string;
 }
 
 interface VideoApiResponse {
-  items: [{ snippet: VideoSnippet; statistics: VideoStatistics }];
+  items: [
+    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
+  ];
 }
 
 class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   private async getVideoId(channelId: string): Promise<string | undefined> {
-    const livePageUrl = `https://www.youtube.com/${channelId}/live`;
+    const livePageUrl =
+      channelId.charAt(0) === "@"
+        ? `https://www.youtube.com/${channelId}/live`
+        : `https://www.youtube.com/channel/${channelId}/live`;
     const response = await fetch(livePageUrl);
     const body = await response.text();
     const parsedBody = parse(body);
-    const element = parsedBody.querySelector('link[rel="shortlinkUrl"]');
+    // console.log(body);
+    const element = parsedBody.querySelector('link[rel="canonical"]');
     if (element === null) {
       this.emit(
         "error",
@@ -52,7 +64,9 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
       return undefined;
     }
 
-    const matchResult = href.match(/https:\/\/youtu.be\/(.+)/);
+    const matchResult = href.match(
+      /https:\/\/www\.youtube\.com\/watch\?v=(.+)/
+    );
 
     if (matchResult === null) {
       this.emit(
@@ -65,29 +79,36 @@ class SimpleYoutubeEventEmitter extends (EventEmitter as new () => TypedEmitter<
     return matchResult.at(1);
   }
 
+  private async getVideoStatistics(videoId: string): Promise<VideoStatistics> {
+    const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
+    const query = new URLSearchParams({
+      id: videoId,
+      key: credential,
+      part: ["snippet", "statistics"].join(","),
+    });
+    const url = `${videoApiUrl}?${query}`;
+
+    const res = await fetch(url);
+    const json = (await res.json()) as VideoApiResponse;
+
+    return {
+      videoId: videoId,
+      videoTitle: json.items[0].snippet.title,
+      likeCount: Number(json.items[0].statistics.likeCount),
+    };
+  }
+
   async watch(
     channelId: string,
     intervalMilliSeconds: number
   ): Promise<Boolean> {
     try {
-      const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
       const videoId = await this.getVideoId(channelId);
       if (videoId === undefined) {
         return false;
       }
-      const query = new URLSearchParams({
-        id: videoId,
-        key: credential,
-        part: ["snippet", "statistics"].join(","),
-      });
-      const url = `${videoApiUrl}?${query}`;
-
-      const res = await fetch(url);
-      const json = (await res.json()) as VideoApiResponse;
-
-      console.log(json);
-      console.log(json.items[0].snippet.title);
-      console.log(json.items[0].statistics.likeCount);
+      const videoStatistics = await this.getVideoStatistics(videoId);
+      console.log(videoStatistics);
 
       this.emit("start");
       return true;
