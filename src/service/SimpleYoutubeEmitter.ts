@@ -135,7 +135,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     );
   }
 
-  async watch(): Promise<Boolean> {
+  async start(): Promise<Boolean> {
     try {
       const videoId = await this.#getVideoId();
       if (videoId === undefined) {
