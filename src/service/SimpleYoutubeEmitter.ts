@@ -119,7 +119,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   async #executeForLikeCount() {
     if (this.#likeCountManager === undefined) {
       throw new Error(
-        "executeForLikeCount called before initialization of manager."
+        "This method is called before initialization of manager."
       );
     }
     const nextLikeCount = await this.#getLikeCount(
