@@ -15,6 +15,7 @@ import { SubscriberCountManager } from "./SubscriberCountManager";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
+import { VideoId } from "../core/VideoId";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
@@ -54,7 +55,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       new NodeFetch()
     );
   }
-  async #getVideoId(): Promise<string | undefined> {
+  async #getVideoId(): Promise<VideoId | undefined> {
     try {
       const livePageUrl =
         this.#channelId.charAt(0) === "@"
@@ -96,7 +97,13 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
         return undefined;
       }
 
-      return matchResult.at(1);
+      const id = matchResult.at(1);
+      if (id === undefined) {
+        this.emit("error", new Error("YouTube videoId format maybe changed."));
+        return undefined;
+      }
+
+      return new VideoId(id);
     } catch (err) {
       this.emit(
         "error",
@@ -105,7 +112,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     }
   }
 
-  async #getLikeCount(videoId: string): Promise<LikeCount | undefined> {
+  async #getLikeCount(videoId: VideoId): Promise<LikeCount | undefined> {
     try {
       const json = await this.#youtubeDataApi.videos(videoId);
 

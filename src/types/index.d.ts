@@ -1,5 +1,6 @@
 import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
+import { VideoId } from "../core/VideoId";
 
 export type SimpleYoutubeEvent = {
   subscribers: (before: SubscriberCount, after: SubscriberCount) => void;
@@ -47,7 +48,7 @@ export interface ChannelApiResponse {
 }
 
 export interface IYoutubeDataApiV3 {
-  videos(videoId: string): Promise<VideoApiResponse>;
+  videos(videoId: VideoId): Promise<VideoApiResponse>;
   channels(channelId: string): Promise<ChannelApiResponse>;
 }
 

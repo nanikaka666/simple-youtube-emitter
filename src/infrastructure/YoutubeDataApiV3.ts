@@ -1,3 +1,4 @@
+import { VideoId } from "../core/VideoId";
 import {
   ChannelApiResponse,
   IYoutubeDataApiV3,
@@ -9,10 +10,10 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
   constructor(credential: string) {
     this.#credential = credential;
   }
-  async videos(videoId: string) {
+  async videos(videoId: VideoId) {
     const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
     const query = new URLSearchParams({
-      id: videoId,
+      id: videoId.id,
       key: this.#credential,
       part: ["snippet", "statistics"].join(","),
     });
