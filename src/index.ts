@@ -1,5 +1,5 @@
 import { argv } from "process";
-import { SimpleYoutubeEmitter } from "./SimpleYoutubeEmitter";
+import { SimpleYoutubeEmitter } from "./service/SimpleYoutubeEmitter";
 
 const credential = argv[2];
 const channelId = argv[3];
