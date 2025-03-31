@@ -9,6 +9,7 @@ import {
   VideoStatistics,
 } from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
+import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
@@ -17,12 +18,19 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   constructor(
     channelId: string,
     youtubeDataApi: IYoutubeDataApiV3,
-    fetchPage: IFetchPage = new NodeFetch()
+    fetchPage: IFetchPage
   ) {
     super();
     this.#channelId = channelId;
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
+  }
+  static init(channelId: string, credential: string) {
+    return new this(
+      channelId,
+      new YoutubeDataApiV3(credential),
+      new NodeFetch()
+    );
   }
   async #getVideoId(): Promise<string | undefined> {
     const livePageUrl =
