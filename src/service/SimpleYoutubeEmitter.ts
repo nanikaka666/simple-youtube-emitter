@@ -8,6 +8,7 @@ import {
   SimpleYoutubeEvent,
   VideoStatistics,
 } from "../types";
+import { NodeFetch } from "../infrastructure/NodeFetch";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
@@ -16,7 +17,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   constructor(
     channelId: string,
     youtubeDataApi: IYoutubeDataApiV3,
-    fetchPage: IFetchPage
+    fetchPage: IFetchPage = new NodeFetch()
   ) {
     super();
     this.#channelId = channelId;
