@@ -1,7 +1,8 @@
 import { LikeCount } from "../core/LikeCount";
+import { SubscriberCount } from "../core/SubscriberCount";
 
 export type SimpleYoutubeEvent = {
-  subs: (old: number, latest: number) => void;
+  subscribers: (before: SubscriberCount, after: SubscriberCount) => void;
   likes: (before: LikeCount, after: LikeCount) => void;
   start: () => void;
   end: () => void;

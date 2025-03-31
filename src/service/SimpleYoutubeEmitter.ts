@@ -13,6 +13,7 @@ import { LikeCountManager } from "./LikeCountManager";
 import { LikeCount } from "../core/LikeCount";
 import { SubscriberCountManager } from "./SubscriberCountManager";
 import { SubscriberCount } from "../core/SubscriberCount";
+import { env } from "process";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
@@ -154,7 +155,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     const nextSubscriberCount = await this.#getSubscriberCount();
     const currentSubscribeCount = this.#subscriberCountManager.get();
     if (this.#subscriberCountManager.update(nextSubscriberCount)) {
-      this.emit("subs", currentSubscribeCount.value, nextSubscriberCount.value);
+      this.emit("subscribers", currentSubscribeCount, nextSubscriberCount);
     }
     setTimeout(
       this.#executeForSubscriberCount.bind(this),
