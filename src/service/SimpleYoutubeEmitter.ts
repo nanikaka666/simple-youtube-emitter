@@ -168,4 +168,12 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       return false;
     }
   }
+
+  close() {
+    if (!this.#isActivated) {
+      return;
+    }
+    this.#isActivated = false;
+    this.emit("end");
+  }
 }
