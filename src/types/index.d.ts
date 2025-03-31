@@ -1,6 +1,6 @@
 export type SimpleYoutubeEvent = {
   subs: (old: number, latest: number) => void;
-  fav: (old: number, latest: number) => void;
+  likes: (old: number, latest: number) => void;
   start: () => void;
   end: () => void;
   error: (err: Error) => void;

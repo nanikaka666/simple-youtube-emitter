@@ -131,7 +131,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     );
     const currentLikeCount = this.#likeCountManager.get();
     if (this.#likeCountManager.update(nextLikeCount)) {
-      this.emit("fav", currentLikeCount.value, nextLikeCount.value);
+      this.emit("likes", currentLikeCount.value, nextLikeCount.value);
     }
     setTimeout(
       this.#executeForLikeCount.bind(this),
