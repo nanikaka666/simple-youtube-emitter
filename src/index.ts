@@ -15,4 +15,4 @@ simple.on("error", (err) => {
   console.log(err.message);
 });
 simple.on("start", () => console.log("started!!"));
-simple.watch(channelId, 10 * 1000);
+simple.watch(10 * 1000);

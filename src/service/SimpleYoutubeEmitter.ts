@@ -23,11 +23,11 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
   }
-  async #getVideoId(channelId: string): Promise<string | undefined> {
+  async #getVideoId(): Promise<string | undefined> {
     const livePageUrl =
-      channelId.charAt(0) === "@"
-        ? `https://www.youtube.com/${channelId}/live`
-        : `https://www.youtube.com/channel/${channelId}/live`;
+      this.#channelId.charAt(0) === "@"
+        ? `https://www.youtube.com/${this.#channelId}/live`
+        : `https://www.youtube.com/channel/${this.#channelId}/live`;
     const body = await this.#fetchPage.fetchAsString(livePageUrl);
     const parsedBody = parse(body);
     const element = parsedBody.querySelector('link[rel="canonical"]');
@@ -35,7 +35,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       this.emit(
         "error",
         new Error(
-          `Given channel ${channelId} doesn't have streaming or upcoming live.`
+          `Given channel ${
+            this.#channelId
+          } doesn't have streaming or upcoming live.`
         )
       );
       return undefined;
@@ -79,29 +81,26 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     };
   }
 
-  async #getChannelStatistics(channelId: string): Promise<ChannelStatistics> {
-    const json = await this.#youtubeDataApi.channels(channelId);
+  async #getChannelStatistics(): Promise<ChannelStatistics> {
+    const json = await this.#youtubeDataApi.channels(this.#channelId);
 
     return {
-      channelId: channelId,
+      channelId: this.#channelId,
       channelTitle: json.items[0].snippet.title,
       subscriberCount: Number(json.items[0].statistics.subscriberCount),
     };
   }
 
-  async watch(
-    channelId: string,
-    intervalMilliSeconds: number
-  ): Promise<Boolean> {
+  async watch(intervalMilliSeconds: number): Promise<Boolean> {
     try {
-      const videoId = await this.#getVideoId(channelId);
+      const videoId = await this.#getVideoId();
       if (videoId === undefined) {
         return false;
       }
       const videoStatistics = await this.#getVideoStatistics(videoId);
       console.log(videoStatistics);
 
-      const channelStatistics = await this.#getChannelStatistics(channelId);
+      const channelStatistics = await this.#getChannelStatistics();
       console.log(channelStatistics);
 
       this.emit("start");
