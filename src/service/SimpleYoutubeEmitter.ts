@@ -20,6 +20,7 @@ import { ChannelId } from "../core/ChannelId";
 import { ChannelTitle } from "../core/ChannelTitle";
 import { VideoTitle } from "../core/VideoTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
+import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: ChannelId;
@@ -125,10 +126,14 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
         Number(json.items[0].statistics.likeCount)
       );
     } catch (err) {
-      this.emit(
-        "error",
-        new Error("Failed to get like count via YouTube videos API.")
-      );
+      if (err instanceof YoutubeApiReturnsError) {
+        this.emit("error", err);
+      } else {
+        this.emit(
+          "error",
+          new Error("Failed to get like count via YouTube videos API.")
+        );
+      }
     }
   }
 
@@ -142,10 +147,14 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
         Number(json.items[0].statistics.subscriberCount)
       );
     } catch (err) {
-      this.emit(
-        "error",
-        new Error("Failed to get subscriber count via YouTube channels API.")
-      );
+      if (err instanceof YoutubeApiReturnsError) {
+        this.emit("error", err);
+      } else {
+        this.emit(
+          "error",
+          new Error("Failed to get subscriber count via YouTube channels API.")
+        );
+      }
     }
   }
 

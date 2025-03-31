@@ -1,6 +1,7 @@
 import { ChannelId } from "../core/ChannelId";
 import { VideoId } from "../core/VideoId";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
+import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import {
   ChannelApiResponse,
   IYoutubeDataApiV3,
@@ -22,7 +23,13 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const url = `${videoApiUrl}?${query}`;
 
     const res = await fetch(url);
-    return (await res.json()) as VideoApiResponse;
+    const json = await res.json();
+    if ("error" in json) {
+      throw new YoutubeApiReturnsError(
+        "Youtube API returns an error. API key credential is maybe invalid."
+      );
+    }
+    return json as VideoApiResponse;
   }
 
   async channels(channelId: ChannelId): Promise<ChannelApiResponse> {
@@ -39,6 +46,12 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const url = `${channelApiUrl}?${query}`;
 
     const res = await fetch(url);
-    return (await res.json()) as ChannelApiResponse;
+    const json = await res.json();
+    if ("error" in json) {
+      throw new YoutubeApiReturnsError(
+        "Youtube API returns an error. API key credential is maybe invalid."
+      );
+    }
+    return json as ChannelApiResponse;
   }
 }
