@@ -1,9 +1,9 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import fetch from "node-fetch";
 import { parse } from "node-html-parser";
 import {
   ChannelStatistics,
+  IFetchPage,
   IYoutubeDataApiV3,
   SimpleYoutubeEvent,
   VideoStatistics,
@@ -12,18 +12,23 @@ import {
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
-  constructor(channelId: string, youtubeDataApi: IYoutubeDataApiV3) {
+  readonly #fetchPage: IFetchPage;
+  constructor(
+    channelId: string,
+    youtubeDataApi: IYoutubeDataApiV3,
+    fetchPage: IFetchPage
+  ) {
     super();
     this.#channelId = channelId;
     this.#youtubeDataApi = youtubeDataApi;
+    this.#fetchPage = fetchPage;
   }
   async #getVideoId(channelId: string): Promise<string | undefined> {
     const livePageUrl =
       channelId.charAt(0) === "@"
         ? `https://www.youtube.com/${channelId}/live`
         : `https://www.youtube.com/channel/${channelId}/live`;
-    const response = await fetch(livePageUrl);
-    const body = await response.text();
+    const body = await this.#fetchPage.fetchAsString(livePageUrl);
     const parsedBody = parse(body);
     const element = parsedBody.querySelector('link[rel="canonical"]');
     if (element === null) {
