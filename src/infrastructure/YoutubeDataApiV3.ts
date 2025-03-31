@@ -1,5 +1,6 @@
 import { ChannelId } from "../core/ChannelId";
 import { VideoId } from "../core/VideoId";
+import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import {
   ChannelApiResponse,
   IYoutubeDataApiV3,
@@ -7,15 +8,15 @@ import {
 } from "../types";
 
 export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
-  readonly #credential: string;
-  constructor(credential: string) {
+  readonly #credential: YoutubeApiKeyCredential;
+  constructor(credential: YoutubeApiKeyCredential) {
     this.#credential = credential;
   }
   async videos(videoId: VideoId) {
     const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
     const query = new URLSearchParams({
       id: videoId.id,
-      key: this.#credential,
+      key: this.#credential.credential,
       part: ["snippet", "statistics"].join(","),
     });
     const url = `${videoApiUrl}?${query}`;
@@ -27,7 +28,7 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
   async channels(channelId: ChannelId): Promise<ChannelApiResponse> {
     const channelApiUrl = "https://www.googleapis.com/youtube/v3/channels";
     const paramsBase = {
-      key: this.#credential,
+      key: this.#credential.credential,
       part: ["snippet", "statistics"].join(","),
     };
 

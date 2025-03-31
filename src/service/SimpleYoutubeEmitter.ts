@@ -19,6 +19,7 @@ import { VideoId } from "../core/VideoId";
 import { ChannelId } from "../core/ChannelId";
 import { ChannelTitle } from "../core/ChannelTitle";
 import { VideoTitle } from "../core/VideoTitle";
+import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: ChannelId;
@@ -54,7 +55,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       new ChannelId(channelId),
       new SafePollingInterval(intervalOptions.forLikes),
       new SafePollingInterval(intervalOptions.forSubscribers),
-      new YoutubeDataApiV3(credential),
+      new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
       new NodeFetch()
     );
   }
