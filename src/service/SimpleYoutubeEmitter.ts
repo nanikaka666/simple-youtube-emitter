@@ -6,7 +6,6 @@ import {
   IFetchPage,
   IYoutubeDataApiV3,
   SimpleYoutubeEvent,
-  VideoStatistics,
 } from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";

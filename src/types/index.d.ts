@@ -6,11 +6,15 @@ export type SimpleYoutubeEvent = {
   error: (err: Error) => void;
 };
 
-export interface VideoStatistics {
-  videoId: string;
-  videoTitle: string;
-  likeCount: number;
+export interface ChannelStatistics {
+  channelId: string;
+  channelTitle: string;
+  subscriberCount: number;
 }
+
+/***********************
+ * infrastrucre types
+ ***********************/
 
 export interface VideoStatisticsResponse {
   likeCount: string;
@@ -20,10 +24,10 @@ export interface VideoSnippetResponse {
   title: string;
 }
 
-export interface ChannelStatistics {
-  channelId: string;
-  channelTitle: string;
-  subscriberCount: number;
+export interface VideoApiResponse {
+  items: [
+    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
+  ];
 }
 
 export interface ChannelStatisticsResponse {
@@ -32,16 +36,6 @@ export interface ChannelStatisticsResponse {
 
 export interface ChannelSnippetResponse {
   title: string;
-}
-
-/***********************
- * infrastrucre types
- ***********************/
-
-export interface VideoApiResponse {
-  items: [
-    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
-  ];
 }
 
 export interface ChannelApiResponse {
