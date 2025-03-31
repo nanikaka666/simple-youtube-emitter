@@ -18,7 +18,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     this.#credential = credential;
     this.#channelId = channelId;
   }
-  private async getVideoId(channelId: string): Promise<string | undefined> {
+  async #getVideoId(channelId: string): Promise<string | undefined> {
     const livePageUrl =
       channelId.charAt(0) === "@"
         ? `https://www.youtube.com/${channelId}/live`
@@ -65,7 +65,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     return matchResult.at(1);
   }
 
-  private async getVideoStatistics(videoId: string): Promise<VideoStatistics> {
+  async #getVideoStatistics(videoId: string): Promise<VideoStatistics> {
     const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
     const query = new URLSearchParams({
       id: videoId,
@@ -84,9 +84,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     };
   }
 
-  private async getChannelStatistics(
-    channelId: string
-  ): Promise<ChannelStatistics> {
+  async #getChannelStatistics(channelId: string): Promise<ChannelStatistics> {
     const channelApiUrl = "https://www.googleapis.com/youtube/v3/channels";
     const paramsBase = {
       key: this.#credential,
@@ -115,14 +113,14 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     intervalMilliSeconds: number
   ): Promise<Boolean> {
     try {
-      const videoId = await this.getVideoId(channelId);
+      const videoId = await this.#getVideoId(channelId);
       if (videoId === undefined) {
         return false;
       }
-      const videoStatistics = await this.getVideoStatistics(videoId);
+      const videoStatistics = await this.#getVideoStatistics(videoId);
       console.log(videoStatistics);
 
-      const channelStatistics = await this.getChannelStatistics(channelId);
+      const channelStatistics = await this.#getChannelStatistics(channelId);
       console.log(channelStatistics);
 
       this.emit("start");
