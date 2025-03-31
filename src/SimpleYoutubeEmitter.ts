@@ -8,7 +8,7 @@ import {
   SimpleYoutubeEvent,
   VideoApiResponse,
   VideoStatistics,
-} from "../types";
+} from "./types";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #credential: string;
