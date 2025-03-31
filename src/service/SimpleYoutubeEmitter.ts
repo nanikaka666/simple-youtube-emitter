@@ -19,6 +19,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   readonly #fetchPage: IFetchPage;
   #likeCountManager?: LikeCountManager;
+  #isActivated: boolean;
   constructor(
     channelId: string,
     intervalMilliSeconds: number,
@@ -35,6 +36,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     this.#intervalMilliSeconds = intervalMilliSeconds;
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
+    this.#isActivated = false;
   }
   static init(
     channelId: string,
@@ -117,6 +119,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   }
 
   async #executeForLikeCount() {
+    if (!this.#isActivated) {
+      return;
+    }
     if (this.#likeCountManager === undefined) {
       throw new Error(
         "This method is called before initialization of manager."
@@ -137,6 +142,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
 
   async start(): Promise<Boolean> {
     try {
+      if (this.#isActivated) {
+        return true;
+      }
       const videoId = await this.#getVideoId();
       if (videoId === undefined) {
         return false;
@@ -151,6 +159,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
         this.#intervalMilliSeconds
       );
 
+      this.#isActivated = true;
       this.emit("start");
       return true;
     } catch (err: unknown) {
