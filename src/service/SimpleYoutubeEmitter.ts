@@ -3,20 +3,19 @@ import TypedEmitter from "typed-emitter";
 import fetch from "node-fetch";
 import { parse } from "node-html-parser";
 import {
-  ChannelApiResponse,
   ChannelStatistics,
+  IYoutubeDataApiV3,
   SimpleYoutubeEvent,
-  VideoApiResponse,
   VideoStatistics,
 } from "../types";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
-  readonly #credential: string;
   readonly #channelId: string;
-  constructor(credential: string, channelId: string) {
+  readonly #youtubeDataApi: IYoutubeDataApiV3;
+  constructor(channelId: string, youtubeDataApi: IYoutubeDataApiV3) {
     super();
-    this.#credential = credential;
     this.#channelId = channelId;
+    this.#youtubeDataApi = youtubeDataApi;
   }
   async #getVideoId(channelId: string): Promise<string | undefined> {
     const livePageUrl =
@@ -66,16 +65,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   }
 
   async #getVideoStatistics(videoId: string): Promise<VideoStatistics> {
-    const videoApiUrl = "https://www.googleapis.com/youtube/v3/videos";
-    const query = new URLSearchParams({
-      id: videoId,
-      key: this.#credential,
-      part: ["snippet", "statistics"].join(","),
-    });
-    const url = `${videoApiUrl}?${query}`;
-
-    const res = await fetch(url);
-    const json = (await res.json()) as VideoApiResponse;
+    const json = await this.#youtubeDataApi.videos(videoId);
 
     return {
       videoId: videoId,
@@ -85,21 +75,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   }
 
   async #getChannelStatistics(channelId: string): Promise<ChannelStatistics> {
-    const channelApiUrl = "https://www.googleapis.com/youtube/v3/channels";
-    const paramsBase = {
-      key: this.#credential,
-      part: ["snippet", "statistics"].join(","),
-    };
-
-    const params =
-      channelId.charAt(0) === "@"
-        ? { ...paramsBase, forHandle: channelId }
-        : { ...paramsBase, id: channelId };
-    const query = new URLSearchParams(params);
-    const url = `${channelApiUrl}?${query}`;
-
-    const res = await fetch(url);
-    const json = (await res.json()) as ChannelApiResponse;
+    const json = await this.#youtubeDataApi.channels(channelId);
 
     return {
       channelId: channelId,
