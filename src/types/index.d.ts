@@ -54,3 +54,7 @@ export interface IYoutubeDataApiV3 {
   videos(videoId: string): Promise<VideoApiResponse>;
   channels(channelId: string): Promise<ChannelApiResponse>;
 }
+
+export interface IFetchPage {
+  fetchAsString(url: string): Promise<string>;
+}
