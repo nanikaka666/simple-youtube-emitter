@@ -84,7 +84,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       }
 
       const matchResult = href.match(
-        /https:\/\/www\.youtube\.com\/watch\?v=(.+)/
+        /^https:\/\/www\.youtube\.com\/watch\?v=(.+)$/
       );
 
       if (matchResult === null) {
