@@ -20,12 +20,6 @@ export interface VideoSnippetResponse {
   title: string;
 }
 
-export interface VideoApiResponse {
-  items: [
-    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
-  ];
-}
-
 export interface ChannelStatistics {
   channelId: string;
   channelTitle: string;
@@ -38,6 +32,16 @@ export interface ChannelStatisticsResponse {
 
 export interface ChannelSnippetResponse {
   title: string;
+}
+
+/***********************
+ * infrastrucre types
+ ***********************/
+
+export interface VideoApiResponse {
+  items: [
+    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
+  ];
 }
 
 export interface ChannelApiResponse {
