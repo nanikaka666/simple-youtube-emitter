@@ -9,7 +9,7 @@ export abstract class CountBase {
       throw new Error("value must be non-negative.");
     }
     if (!Number.isSafeInteger(value)) {
-      throw new Error("value is too large for likeCount");
+      throw new Error("value is too large.");
     }
   }
 }
