@@ -11,6 +11,8 @@ import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 import { LikeCountManager } from "./LikeCountManager";
 import { LikeCount } from "../core/LikeCount";
+import { SubscriberCountManager } from "./SubscriberCountManager";
+import { SubscriberCount } from "../core/SubscriberCount";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
@@ -18,6 +20,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   readonly #fetchPage: IFetchPage;
   #likeCountManager?: LikeCountManager;
+  #subscriberCountManager?: SubscriberCountManager;
   #isActivated: boolean;
   constructor(
     channelId: string,
@@ -107,14 +110,14 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     );
   }
 
-  async #getChannelStatistics(): Promise<ChannelStatistics> {
+  async #getSubscriberCount(): Promise<SubscriberCount> {
     const json = await this.#youtubeDataApi.channels(this.#channelId);
 
-    return {
-      channelId: this.#channelId,
-      channelTitle: json.items[0].snippet.title,
-      subscriberCount: Number(json.items[0].statistics.subscriberCount),
-    };
+    return new SubscriberCount(
+      this.#channelId,
+      json.items[0].snippet.title,
+      Number(json.items[0].statistics.subscriberCount)
+    );
   }
 
   async #executeForLikeCount() {
@@ -139,6 +142,26 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     );
   }
 
+  async #executeForSubscriberCount() {
+    if (!this.#isActivated) {
+      return;
+    }
+    if (this.#subscriberCountManager === undefined) {
+      throw new Error(
+        "This method is called before initialization of manager."
+      );
+    }
+    const nextSubscriberCount = await this.#getSubscriberCount();
+    const currentSubscribeCount = this.#subscriberCountManager.get();
+    if (this.#subscriberCountManager.update(nextSubscriberCount)) {
+      this.emit("subs", currentSubscribeCount.value, nextSubscriberCount.value);
+    }
+    setTimeout(
+      this.#executeForSubscriberCount.bind(this),
+      this.#intervalMilliSeconds
+    );
+  }
+
   async start(): Promise<Boolean> {
     try {
       if (this.#isActivated) {
@@ -151,10 +174,18 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       const videoStatistics = await this.#getLikeCount(videoId);
       this.#likeCountManager = new LikeCountManager(videoStatistics);
 
-      const channelStatistics = await this.#getChannelStatistics();
+      const channelStatistics = await this.#getSubscriberCount();
+      this.#subscriberCountManager = new SubscriberCountManager(
+        channelStatistics
+      );
 
       setTimeout(
         this.#executeForLikeCount.bind(this),
+        this.#intervalMilliSeconds
+      );
+
+      setTimeout(
+        this.#executeForSubscriberCount.bind(this),
         this.#intervalMilliSeconds
       );
 
