@@ -163,7 +163,6 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       this.emit("start");
       return true;
     } catch (err: unknown) {
-      console.log(err);
       this.emit("error", new Error("Begining of watch is failed."));
       return false;
     }
