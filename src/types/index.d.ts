@@ -9,12 +9,6 @@ export type SimpleYoutubeEvent = {
   error: (err: Error) => void;
 };
 
-export interface ChannelStatistics {
-  channelId: string;
-  channelTitle: string;
-  subscriberCount: number;
-}
-
 /***********************
  * infrastrucre types
  ***********************/

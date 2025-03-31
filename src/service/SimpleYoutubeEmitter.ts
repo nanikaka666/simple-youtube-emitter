@@ -1,12 +1,7 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { parse } from "node-html-parser";
-import {
-  ChannelStatistics,
-  IFetchPage,
-  IYoutubeDataApiV3,
-  SimpleYoutubeEvent,
-} from "../types";
+import { IFetchPage, IYoutubeDataApiV3, SimpleYoutubeEvent } from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 import { LikeCountManager } from "./LikeCountManager";
