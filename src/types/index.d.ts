@@ -49,3 +49,8 @@ export interface ChannelApiResponse {
     { snippet: ChannelSnippetResponse; statistics: ChannelStatisticsResponse }
   ];
 }
+
+export interface IYoutubeDataApiV3 {
+  videos(videoId: string): Promise<VideoApiResponse>;
+  channels(channelId: string): Promise<ChannelApiResponse>;
+}
