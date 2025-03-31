@@ -167,12 +167,12 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       if (videoId === undefined) {
         return false;
       }
-      const videoStatistics = await this.#getLikeCount(videoId);
-      this.#likeCountManager = new LikeCountManager(videoStatistics);
+      const initialLikeCount = await this.#getLikeCount(videoId);
+      this.#likeCountManager = new LikeCountManager(initialLikeCount);
 
-      const channelStatistics = await this.#getSubscriberCount();
+      const initialSubscriberCount = await this.#getSubscriberCount();
       this.#subscriberCountManager = new SubscriberCountManager(
-        channelStatistics
+        initialSubscriberCount
       );
 
       setTimeout(
