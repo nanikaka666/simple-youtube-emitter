@@ -35,7 +35,7 @@ export interface VideoApiResponse {
 }
 
 export interface ChannelStatisticsResponse {
-  subscriberCount: number;
+  subscriberCount: string;
 }
 
 export interface ChannelSnippetResponse {
