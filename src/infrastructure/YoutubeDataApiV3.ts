@@ -1,3 +1,4 @@
+import { ChannelId } from "../core/ChannelId";
 import { VideoId } from "../core/VideoId";
 import {
   ChannelApiResponse,
@@ -23,17 +24,16 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     return (await res.json()) as VideoApiResponse;
   }
 
-  async channels(channelId: string): Promise<ChannelApiResponse> {
+  async channels(channelId: ChannelId): Promise<ChannelApiResponse> {
     const channelApiUrl = "https://www.googleapis.com/youtube/v3/channels";
     const paramsBase = {
       key: this.#credential,
       part: ["snippet", "statistics"].join(","),
     };
 
-    const params =
-      channelId.charAt(0) === "@"
-        ? { ...paramsBase, forHandle: channelId }
-        : { ...paramsBase, id: channelId };
+    const params = channelId.isHandle
+      ? { ...paramsBase, forHandle: channelId.id }
+      : { ...paramsBase, id: channelId.id };
     const query = new URLSearchParams(params);
     const url = `${channelApiUrl}?${query}`;
 

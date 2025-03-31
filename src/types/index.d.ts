@@ -1,3 +1,4 @@
+import { ChannelId } from "../core/ChannelId";
 import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { VideoId } from "../core/VideoId";
@@ -49,7 +50,7 @@ export interface ChannelApiResponse {
 
 export interface IYoutubeDataApiV3 {
   videos(videoId: VideoId): Promise<VideoApiResponse>;
-  channels(channelId: string): Promise<ChannelApiResponse>;
+  channels(channelId: ChannelId): Promise<ChannelApiResponse>;
 }
 
 export interface IFetchPage {

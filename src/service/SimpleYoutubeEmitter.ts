@@ -16,9 +16,10 @@ import { SubscriberCount } from "../core/SubscriberCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { VideoId } from "../core/VideoId";
+import { ChannelId } from "../core/ChannelId";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
-  readonly #channelId: string;
+  readonly #channelId: ChannelId;
   readonly #intervalForLikes: PollingInterval;
   readonly #intervalForSubscribers: PollingInterval;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
@@ -27,7 +28,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   #subscriberCountManager?: SubscriberCountManager;
   #isActivated: boolean;
   constructor(
-    channelId: string,
+    channelId: ChannelId,
     intervalForLikes: PollingInterval,
     intervalForSubscribers: PollingInterval,
     youtubeDataApi: IYoutubeDataApiV3,
@@ -48,7 +49,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     credential: string
   ) {
     return new this(
-      channelId,
+      new ChannelId(channelId),
       new SafePollingInterval(intervalOptions.forLikes),
       new SafePollingInterval(intervalOptions.forSubscribers),
       new YoutubeDataApiV3(credential),
@@ -57,10 +58,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   }
   async #getVideoId(): Promise<VideoId | undefined> {
     try {
-      const livePageUrl =
-        this.#channelId.charAt(0) === "@"
-          ? `https://www.youtube.com/${this.#channelId}/live`
-          : `https://www.youtube.com/channel/${this.#channelId}/live`;
+      const livePageUrl = this.#channelId.isHandle
+        ? `https://www.youtube.com/${this.#channelId.id}/live`
+        : `https://www.youtube.com/channel/${this.#channelId.id}/live`;
       const body = await this.#fetchPage.fetchAsString(livePageUrl);
       const parsedBody = parse(body);
       const element = parsedBody.querySelector('link[rel="canonical"]');
