@@ -1,10 +1,11 @@
 import { CountBase } from "./CountBase";
 import { VideoId } from "./VideoId";
+import { VideoTitle } from "./VideoTitle";
 
 export class LikeCount extends CountBase {
   readonly videoId: VideoId;
-  readonly videoTitle: string;
-  constructor(videoId: VideoId, videoTitle: string, value: number) {
+  readonly videoTitle: VideoTitle;
+  constructor(videoId: VideoId, videoTitle: VideoTitle, value: number) {
     super(value);
     this.videoId = videoId;
     this.videoTitle = videoTitle;

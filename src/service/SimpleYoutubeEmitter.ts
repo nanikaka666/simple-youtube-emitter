@@ -18,6 +18,7 @@ import { SafePollingInterval } from "../core/SafePollingInterval";
 import { VideoId } from "../core/VideoId";
 import { ChannelId } from "../core/ChannelId";
 import { ChannelTitle } from "../core/ChannelTitle";
+import { VideoTitle } from "../core/VideoTitle";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: ChannelId;
@@ -119,7 +120,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
 
       return new LikeCount(
         videoId,
-        json.items[0].snippet.title,
+        new VideoTitle(json.items[0].snippet.title),
         Number(json.items[0].statistics.likeCount)
       );
     } catch (err) {
