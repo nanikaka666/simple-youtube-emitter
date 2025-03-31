@@ -1,10 +1,11 @@
 import { ChannelId } from "./ChannelId";
+import { ChannelTitle } from "./ChannelTitle";
 import { CountBase } from "./CountBase";
 
 export class SubscriberCount extends CountBase {
   readonly channelId: ChannelId;
-  readonly channelTitle: string;
-  constructor(channelId: ChannelId, channelTitle: string, value: number) {
+  readonly channelTitle: ChannelTitle;
+  constructor(channelId: ChannelId, channelTitle: ChannelTitle, value: number) {
     super(value);
     this.channelId = channelId;
     this.channelTitle = channelTitle;
