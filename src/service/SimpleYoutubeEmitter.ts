@@ -1,7 +1,12 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { parse } from "node-html-parser";
-import { IFetchPage, IYoutubeDataApiV3, SimpleYoutubeEvent } from "../types";
+import {
+  IFetchPage,
+  IntervalOptions,
+  IYoutubeDataApiV3,
+  SimpleYoutubeEvent,
+} from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 import { LikeCountManager } from "./LikeCountManager";
@@ -11,7 +16,7 @@ import { SubscriberCount } from "../core/SubscriberCount";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
-  readonly #intervalMilliSeconds: number;
+  readonly #intervalOptions: IntervalOptions;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   readonly #fetchPage: IFetchPage;
   #likeCountManager?: LikeCountManager;
@@ -19,30 +24,33 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
   #isActivated: boolean;
   constructor(
     channelId: string,
-    intervalMilliSeconds: number,
+    intervalOptions: IntervalOptions,
     youtubeDataApi: IYoutubeDataApiV3,
     fetchPage: IFetchPage
   ) {
     super();
 
-    if (intervalMilliSeconds < 1000) {
+    if (
+      intervalOptions.forLikes < 1000 ||
+      intervalOptions.forSubscribers < 1000
+    ) {
       throw new Error("interval is too short.");
     }
 
     this.#channelId = channelId;
-    this.#intervalMilliSeconds = intervalMilliSeconds;
+    this.#intervalOptions = intervalOptions;
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
     this.#isActivated = false;
   }
   static init(
     channelId: string,
-    intervalMilliSeconds: number,
+    intervalOptions: IntervalOptions,
     credential: string
   ) {
     return new this(
       channelId,
-      intervalMilliSeconds,
+      intervalOptions,
       new YoutubeDataApiV3(credential),
       new NodeFetch()
     );
@@ -153,7 +161,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     }
     setTimeout(
       this.#executeForLikeCount.bind(this),
-      this.#intervalMilliSeconds
+      this.#intervalOptions.forLikes
     );
   }
 
@@ -176,7 +184,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     }
     setTimeout(
       this.#executeForSubscriberCount.bind(this),
-      this.#intervalMilliSeconds
+      this.#intervalOptions.forSubscribers
     );
   }
 
@@ -205,12 +213,12 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
 
     setTimeout(
       this.#executeForLikeCount.bind(this),
-      this.#intervalMilliSeconds
+      this.#intervalOptions.forLikes
     );
 
     setTimeout(
       this.#executeForSubscriberCount.bind(this),
-      this.#intervalMilliSeconds
+      this.#intervalOptions.forSubscribers
     );
 
     this.#isActivated = true;

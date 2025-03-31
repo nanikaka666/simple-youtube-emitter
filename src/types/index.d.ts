@@ -9,6 +9,11 @@ export type SimpleYoutubeEvent = {
   error: (err: Error) => void;
 };
 
+export interface IntervalOptions {
+  forLikes: number;
+  forSubscribers: number;
+}
+
 /***********************
  * infrastrucre types
  ***********************/
