@@ -10,24 +10,40 @@ import {
 } from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
+import { LikeCountManager } from "./LikeCountManager";
+import { LikeCount } from "../core/LikeCount";
 
 export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
   readonly #channelId: string;
+  readonly #intervalMilliSeconds: number;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   readonly #fetchPage: IFetchPage;
+  #likeCountManager?: LikeCountManager;
   constructor(
     channelId: string,
+    intervalMilliSeconds: number,
     youtubeDataApi: IYoutubeDataApiV3,
     fetchPage: IFetchPage
   ) {
     super();
+
+    if (intervalMilliSeconds < 1000) {
+      throw new Error("interval is too short.");
+    }
+
     this.#channelId = channelId;
+    this.#intervalMilliSeconds = intervalMilliSeconds;
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
   }
-  static init(channelId: string, credential: string) {
+  static init(
+    channelId: string,
+    intervalMilliSeconds: number,
+    credential: string
+  ) {
     return new this(
       channelId,
+      intervalMilliSeconds,
       new YoutubeDataApiV3(credential),
       new NodeFetch()
     );
@@ -80,14 +96,14 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     return matchResult.at(1);
   }
 
-  async #getVideoStatistics(videoId: string): Promise<VideoStatistics> {
+  async #getLikeCount(videoId: string): Promise<LikeCount> {
     const json = await this.#youtubeDataApi.videos(videoId);
 
-    return {
-      videoId: videoId,
-      videoTitle: json.items[0].snippet.title,
-      likeCount: Number(json.items[0].statistics.likeCount),
-    };
+    return new LikeCount(
+      videoId,
+      json.items[0].snippet.title,
+      Number(json.items[0].statistics.likeCount)
+    );
   }
 
   async #getChannelStatistics(): Promise<ChannelStatistics> {
@@ -100,17 +116,40 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     };
   }
 
-  async watch(intervalMilliSeconds: number): Promise<Boolean> {
+  async #executeForLikeCount() {
+    if (this.#likeCountManager === undefined) {
+      throw new Error(
+        "executeForLikeCount called before initialization of manager."
+      );
+    }
+    const nextLikeCount = await this.#getLikeCount(
+      this.#likeCountManager.get().videoId
+    );
+    const currentLikeCount = this.#likeCountManager.get();
+    if (this.#likeCountManager.update(nextLikeCount)) {
+      this.emit("fav", currentLikeCount.value, nextLikeCount.value);
+    }
+    setTimeout(
+      this.#executeForLikeCount.bind(this),
+      this.#intervalMilliSeconds
+    );
+  }
+
+  async watch(): Promise<Boolean> {
     try {
       const videoId = await this.#getVideoId();
       if (videoId === undefined) {
         return false;
       }
-      const videoStatistics = await this.#getVideoStatistics(videoId);
-      console.log(videoStatistics);
+      const videoStatistics = await this.#getLikeCount(videoId);
+      this.#likeCountManager = new LikeCountManager(videoStatistics);
 
       const channelStatistics = await this.#getChannelStatistics();
-      console.log(channelStatistics);
+
+      setTimeout(
+        this.#executeForLikeCount.bind(this),
+        this.#intervalMilliSeconds
+      );
 
       this.emit("start");
       return true;
