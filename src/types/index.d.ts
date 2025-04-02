@@ -11,6 +11,13 @@ export type SimpleYoutubeEvent = {
   error: (err: Error) => void;
 };
 
+export type SubscriberCountRaisedEvent = {
+  raised: (before: SubscriberCount, after: SubscriberCount) => void;
+  start: () => void;
+  end: () => void;
+  error: (err: Error) => void;
+};
+
 export interface IntervalOptions {
   forLikes: number;
   forSubscribers: number;
