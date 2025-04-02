@@ -6,5 +6,5 @@ test("valid value", () => {
 });
 
 test("too small value is invalid", () => {
-  expect(() => new SafePollingInterval(10 * 1000 - 1).value).toThrow;
+  expect(() => new SafePollingInterval(10 * 1000 - 1).value).toThrow();
 });

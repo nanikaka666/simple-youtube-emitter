@@ -6,9 +6,9 @@ test("valid id will be instanced.", () => {
 });
 
 test("empty id is not allowed.", () => {
-  expect(() => new VideoId("")).toThrow;
+  expect(() => new VideoId("")).toThrow();
 });
 
 test("invalid id is not allowed.", () => {
-  expect(() => new VideoId("abcdefghijklmnopqrstuvwxyz.")).toThrow;
+  expect(() => new VideoId("abcdefghijklmnopqrstuvwxyz.")).toThrow();
 });

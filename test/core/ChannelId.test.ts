@@ -15,9 +15,9 @@ test("valid channel id (formed as handle), will be instanced.", () => {
 });
 
 test("empty id is not allowed.", () => {
-  expect(() => new ChannelId("")).toThrow;
+  expect(() => new ChannelId("")).toThrow();
 });
 
 test("too long id is not allowed.", () => {
-  expect(() => new ChannelId(Array(32).join("a"))).toThrow;
+  expect(() => new ChannelId(Array(32).join("a"))).toThrow();
 });
