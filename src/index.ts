@@ -1,2 +1,3 @@
-import { SimpleYoutubeEmitter } from "./service/SimpleYoutubeEmitter";
-export { SimpleYoutubeEmitter };
+import { LikeCountRaisedEventEmitter } from "./service/LikeCountRaisedEventEmitter";
+import { SubscriberCountRaisedEventEmitter } from "./service/SubscriberCountRaisedEventEmitter";
+export { LikeCountRaisedEventEmitter, SubscriberCountRaisedEventEmitter };
