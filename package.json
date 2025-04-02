@@ -4,7 +4,7 @@
   "description": "This simple module emit events when raised up number of your subscribers and favorites of live-streaming at your YouTube channel.",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest",
+    "test": "jest",
     "debug": "tsc && node dist/debug.js"
   },
   "repository": {
