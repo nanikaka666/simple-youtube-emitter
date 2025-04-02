@@ -1,61 +1,44 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { parse } from "node-html-parser";
-import {
-  IFetchPage,
-  IntervalOptions,
-  IYoutubeDataApiV3,
-  SimpleYoutubeEvent,
-} from "../types";
+import { IFetchPage, IYoutubeDataApiV3, LikeCountRaisedEvent } from "../types";
 import { NodeFetch } from "../infrastructure/NodeFetch";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 import { LikeCountManager } from "./LikeCountManager";
 import { LikeCount } from "../core/LikeCount";
-import { SubscriberCountManager } from "./SubscriberCountManager";
-import { SubscriberCount } from "../core/SubscriberCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { VideoId } from "../core/VideoId";
 import { ChannelId } from "../core/ChannelId";
-import { ChannelTitle } from "../core/ChannelTitle";
 import { VideoTitle } from "../core/VideoTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 
-export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitter<SimpleYoutubeEvent>) {
+export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
-  readonly #intervalForLikes: PollingInterval;
-  readonly #intervalForSubscribers: PollingInterval;
+  readonly #interval: PollingInterval;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   readonly #fetchPage: IFetchPage;
   #likeCountManager?: LikeCountManager;
-  #subscriberCountManager?: SubscriberCountManager;
   #isActivated: boolean;
   constructor(
     channelId: ChannelId,
-    intervalForLikes: PollingInterval,
-    intervalForSubscribers: PollingInterval,
+    interval: PollingInterval,
     youtubeDataApi: IYoutubeDataApiV3,
     fetchPage: IFetchPage
   ) {
     super();
 
     this.#channelId = channelId;
-    this.#intervalForLikes = intervalForLikes;
-    this.#intervalForSubscribers = intervalForSubscribers;
+    this.#interval = interval;
     this.#youtubeDataApi = youtubeDataApi;
     this.#fetchPage = fetchPage;
     this.#isActivated = false;
   }
-  static init(
-    channelId: string,
-    intervalOptions: IntervalOptions,
-    credential: string
-  ) {
+  static init(channelId: string, interval: number, credential: string) {
     return new this(
       new ChannelId(channelId),
-      new SafePollingInterval(intervalOptions.forLikes),
-      new SafePollingInterval(intervalOptions.forSubscribers),
+      new SafePollingInterval(interval),
       new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
       new NodeFetch()
     );
@@ -137,28 +120,7 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     }
   }
 
-  async #getSubscriberCount(): Promise<SubscriberCount | undefined> {
-    try {
-      const json = await this.#youtubeDataApi.channels(this.#channelId);
-
-      return new SubscriberCount(
-        this.#channelId,
-        new ChannelTitle(json.items[0].snippet.title),
-        Number(json.items[0].statistics.subscriberCount)
-      );
-    } catch (err) {
-      if (err instanceof YoutubeApiReturnsError) {
-        this.emit("error", err);
-      } else {
-        this.emit(
-          "error",
-          new Error("Failed to get subscriber count via YouTube channels API.")
-        );
-      }
-    }
-  }
-
-  async #executeForLikeCount() {
+  async #execute() {
     if (!this.#isActivated) {
       return;
     }
@@ -175,35 +137,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
     }
     const currentLikeCount = this.#likeCountManager.get();
     if (this.#likeCountManager.update(nextLikeCount)) {
-      this.emit("likes", currentLikeCount, nextLikeCount);
+      this.emit("raised", currentLikeCount, nextLikeCount);
     }
-    setTimeout(
-      this.#executeForLikeCount.bind(this),
-      this.#intervalForLikes.value
-    );
-  }
-
-  async #executeForSubscriberCount() {
-    if (!this.#isActivated) {
-      return;
-    }
-    if (this.#subscriberCountManager === undefined) {
-      throw new Error(
-        "This method is called before initialization of manager."
-      );
-    }
-    const nextSubscriberCount = await this.#getSubscriberCount();
-    if (nextSubscriberCount === undefined) {
-      return;
-    }
-    const currentSubscribeCount = this.#subscriberCountManager.get();
-    if (this.#subscriberCountManager.update(nextSubscriberCount)) {
-      this.emit("subscribers", currentSubscribeCount, nextSubscriberCount);
-    }
-    setTimeout(
-      this.#executeForSubscriberCount.bind(this),
-      this.#intervalForSubscribers.value
-    );
+    setTimeout(this.#execute.bind(this), this.#interval.value);
   }
 
   async start(): Promise<Boolean> {
@@ -219,25 +155,9 @@ export class SimpleYoutubeEmitter extends (EventEmitter as new () => TypedEmitte
       return false;
     }
 
-    const initialSubscriberCount = await this.#getSubscriberCount();
-    if (initialSubscriberCount === undefined) {
-      return false;
-    }
-
     this.#likeCountManager = new LikeCountManager(initialLikeCount);
-    this.#subscriberCountManager = new SubscriberCountManager(
-      initialSubscriberCount
-    );
 
-    setTimeout(
-      this.#executeForLikeCount.bind(this),
-      this.#intervalForLikes.value
-    );
-
-    setTimeout(
-      this.#executeForSubscriberCount.bind(this),
-      this.#intervalForSubscribers.value
-    );
+    setTimeout(this.#execute.bind(this), this.#interval.value);
 
     this.#isActivated = true;
     this.emit("start");

@@ -3,9 +3,8 @@ import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { VideoId } from "../core/VideoId";
 
-export type SimpleYoutubeEvent = {
-  subscribers: (before: SubscriberCount, after: SubscriberCount) => void;
-  likes: (before: LikeCount, after: LikeCount) => void;
+export type LikeCountRaisedEvent = {
+  raised: (before: LikeCount, after: LikeCount) => void;
   start: () => void;
   end: () => void;
   error: (err: Error) => void;
@@ -17,11 +16,6 @@ export type SubscriberCountRaisedEvent = {
   end: () => void;
   error: (err: Error) => void;
 };
-
-export interface IntervalOptions {
-  forLikes: number;
-  forSubscribers: number;
-}
 
 /***********************
  * infrastrucre types
