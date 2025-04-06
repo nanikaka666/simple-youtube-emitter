@@ -30,7 +30,7 @@ describe("videos", () => {
   afterEach(() => jest.clearAllMocks());
   test("confirm that request url and queries are expected.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -42,12 +42,12 @@ describe("videos", () => {
     expect(url.origin).toBe("https://www.googleapis.com");
     expect(url.pathname).toBe("/youtube/v3/videos");
     expect(url.search).toContain("id=abcdefghijk");
-    expect(url.search).toContain("key=hogehogehoge");
+    expect(url.search).toContain("key=aaaaabbbbbcccccdddddeeeeefffffggggg1234");
   });
 
   test("correctly fetched data.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -77,7 +77,7 @@ describe("videos", () => {
       ) as jest.Mock
     );
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -110,7 +110,7 @@ describe("channels", () => {
   afterEach(() => jest.clearAllMocks());
   test("confirm that request url and queries are expected. case handle", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const channelId = new ChannelId("@test");
 
@@ -122,12 +122,12 @@ describe("channels", () => {
     expect(url.origin).toBe("https://www.googleapis.com");
     expect(url.pathname).toBe("/youtube/v3/channels");
     expect(url.search).toContain("forHandle=%40test");
-    expect(url.search).toContain("key=hogehogehoge");
+    expect(url.search).toContain("key=aaaaabbbbbcccccdddddeeeeefffffggggg1234");
   });
 
   test("confirm that request url and queries are expected. case not handle.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const channelId = new ChannelId("testtesttesttesttesttest");
 
@@ -139,12 +139,12 @@ describe("channels", () => {
     expect(url.origin).toBe("https://www.googleapis.com");
     expect(url.pathname).toBe("/youtube/v3/channels");
     expect(url.search).toContain("id=testtesttesttesttesttest");
-    expect(url.search).toContain("key=hogehogehoge");
+    expect(url.search).toContain("key=aaaaabbbbbcccccdddddeeeeefffffggggg1234");
   });
 
   test("correctly fetched data.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const channelId = new ChannelId("@test");
 
@@ -173,7 +173,7 @@ describe("channels", () => {
       ) as jest.Mock
     );
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("hogehogehoge")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
     );
     const channelId = new ChannelId("@test");
 
