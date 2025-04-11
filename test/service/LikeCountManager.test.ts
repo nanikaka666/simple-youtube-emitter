@@ -8,9 +8,7 @@ const videoTitle = new VideoTitle("video title");
 
 describe("constructor", () => {
   test("like count is set 0, even if init parammeter has positive like count.", () => {
-    const manager = new LikeCountManager(
-      new LikeCount(videoId, videoTitle, 100)
-    );
+    const manager = new LikeCountManager(new LikeCount(videoId, videoTitle, 100));
     expect(manager.get()).toEqual(new LikeCount(videoId, videoTitle, 0));
   });
 });
@@ -36,12 +34,8 @@ describe("update", () => {
 
     expect(() =>
       manager.update(
-        new LikeCount(
-          new VideoId("ABCDEFGHIJK"),
-          new VideoTitle("another title"),
-          10
-        )
-      )
+        new LikeCount(new VideoId("ABCDEFGHIJK"), new VideoTitle("another title"), 10),
+      ),
     ).toThrow();
   });
 });
@@ -51,7 +45,7 @@ describe("get", () => {
     const manager = new LikeCountManager(new LikeCount(videoId, videoTitle, 0));
 
     [10, 15, 12, 10, 13, 20, 18].forEach((count) =>
-      manager.update(new LikeCount(videoId, videoTitle, count))
+      manager.update(new LikeCount(videoId, videoTitle, count)),
     );
     expect(manager.get()).toEqual(new LikeCount(videoId, videoTitle, 20));
   });

@@ -17,11 +17,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
   readonly #youtubeDataApi: IYoutubeDataApiV3;
   #subscriberCountManager?: SubscriberCountManager;
   #isActivated: boolean;
-  constructor(
-    channelId: ChannelId,
-    interval: PollingInterval,
-    youtubeDataApi: IYoutubeDataApiV3
-  ) {
+  constructor(channelId: ChannelId, interval: PollingInterval, youtubeDataApi: IYoutubeDataApiV3) {
     super();
 
     this.#channelId = channelId;
@@ -33,7 +29,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential))
+      new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
     );
   }
 
@@ -44,16 +40,13 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
       return new SubscriberCount(
         this.#channelId,
         new ChannelTitle(json.items[0].snippet.title),
-        Number(json.items[0].statistics.subscriberCount)
+        Number(json.items[0].statistics.subscriberCount),
       );
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
       } else {
-        this.emit(
-          "error",
-          new Error("Failed to get subscriber count via YouTube channels API.")
-        );
+        this.emit("error", new Error("Failed to get subscriber count via YouTube channels API."));
       }
     }
   }
@@ -63,9 +56,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
       return;
     }
     if (this.#subscriberCountManager === undefined) {
-      throw new Error(
-        "This method is called before initialization of manager."
-      );
+      throw new Error("This method is called before initialization of manager.");
     }
     const nextSubscriberCount = await this.#getSubscriberCount();
     if (nextSubscriberCount === undefined) {
@@ -88,9 +79,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
       return false;
     }
 
-    this.#subscriberCountManager = new SubscriberCountManager(
-      initialSubscriberCount
-    );
+    this.#subscriberCountManager = new SubscriberCountManager(initialSubscriberCount);
 
     setTimeout(this.#execute.bind(this), this.#interval.value);
 

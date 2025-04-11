@@ -10,9 +10,7 @@ test("empty credential is invalid.", () => {
 });
 
 test("contains invalid character.", () => {
-  expect(
-    () => new YoutubeApiKeyCredential("abcdefgh jABCDEFGHIJ0123456789-_-_-_-_-")
-  ).toThrow();
+  expect(() => new YoutubeApiKeyCredential("abcdefgh jABCDEFGHIJ0123456789-_-_-_-_-")).toThrow();
 });
 
 test("too long credential is invalid.", () => {

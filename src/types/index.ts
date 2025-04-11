@@ -30,9 +30,7 @@ export interface VideoSnippetResponse {
 }
 
 export interface VideoApiResponse {
-  items: [
-    { snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }
-  ];
+  items: [{ snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }];
 }
 
 export interface ChannelStatisticsResponse {
@@ -44,9 +42,7 @@ export interface ChannelSnippetResponse {
 }
 
 export interface ChannelApiResponse {
-  items: [
-    { snippet: ChannelSnippetResponse; statistics: ChannelStatisticsResponse }
-  ];
+  items: [{ snippet: ChannelSnippetResponse; statistics: ChannelStatisticsResponse }];
 }
 
 export interface IYoutubeDataApiV3 {

@@ -7,13 +7,22 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "debug": "tsc && node dist/debug.js"
+    "debug": "tsc && node dist/debug.js",
+    "format-check": "prettier . --check",
+    "format": "prettier . --write"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nanikaka666/simple-youtube-emitter.git"
   },
-  "keywords": ["youtube", "live", "streaming", "subscriber", "like", "emitter"],
+  "keywords": [
+    "youtube",
+    "live",
+    "streaming",
+    "subscriber",
+    "like",
+    "emitter"
+  ],
   "author": "nanikaka <nanikaka666@gmail.com>",
   "license": "MIT",
   "publishConfig": {
@@ -27,6 +36,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.14",
     "jest": "^29.7.0",
+    "prettier": "^3.5.3",
     "ts-jest": "^29.3.1",
     "typed-emitter": "^2.1.0",
     "typescript": "^5.8.2"
