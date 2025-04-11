@@ -9,7 +9,8 @@
     "test": "jest --randomize",
     "debug": "tsc && node dist/debug.js",
     "format-check": "prettier . --check",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
