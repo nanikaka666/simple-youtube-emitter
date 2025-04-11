@@ -9,15 +9,12 @@ const anotherValidVideoId = new VideoId("ABCDEFGHIJK");
 const anotherVideoTitle = new VideoTitle("another title");
 
 describe("constructor", () => {
-  test.each([0, Number.MAX_SAFE_INTEGER])(
-    "valid value will be instanced.",
-    (inputValue) => {
-      const actual = new LikeCount(validVideoId, validVideoTitle, inputValue);
-      expect(actual.videoId).toBe(validVideoId);
-      expect(actual.videoTitle).toBe(validVideoTitle);
-      expect(actual.value).toBe(inputValue);
-    }
-  );
+  test.each([0, Number.MAX_SAFE_INTEGER])("valid value will be instanced.", (inputValue) => {
+    const actual = new LikeCount(validVideoId, validVideoTitle, inputValue);
+    expect(actual.videoId).toBe(validVideoId);
+    expect(actual.videoTitle).toBe(validVideoTitle);
+    expect(actual.value).toBe(inputValue);
+  });
 
   test("negative value is not allowed.", () => {
     expect(() => new LikeCount(validVideoId, validVideoTitle, -1)).toThrow();
@@ -25,12 +22,7 @@ describe("constructor", () => {
 
   test("too large value is not allowed.", () => {
     expect(
-      () =>
-        new LikeCount(
-          validVideoId,
-          validVideoTitle,
-          Number.MAX_SAFE_INTEGER + 1
-        )
+      () => new LikeCount(validVideoId, validVideoTitle, Number.MAX_SAFE_INTEGER + 1),
     ).toThrow();
   });
 });

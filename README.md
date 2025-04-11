@@ -30,11 +30,7 @@ const interval = 10 * 1000; // unit is milli seconds.
 const credential = "YOUR CREDENTIAL"; // Youtube API key.
 
 // init() method is useful for instantiate, because constructor parameter is a little complicated.
-const likeEmitter = LikeCountRaisedEventEmitter.init(
-  channelId,
-  interval,
-  credential
-);
+const likeEmitter = LikeCountRaisedEventEmitter.init(channelId, interval, credential);
 ```
 
 Set your event listener. Supported event names are below:

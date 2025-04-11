@@ -23,14 +23,14 @@ describe("videos", () => {
                 },
               ],
             } satisfies VideoApiResponse),
-        })
-      ) as jest.Mock
+        }),
+      ) as jest.Mock,
     );
   });
   afterEach(() => jest.clearAllMocks());
   test("confirm that request url and queries are expected.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -47,7 +47,7 @@ describe("videos", () => {
 
   test("correctly fetched data.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -73,11 +73,11 @@ describe("videos", () => {
             Promise.resolve({
               error: {},
             }),
-        })
-      ) as jest.Mock
+        }),
+      ) as jest.Mock,
     );
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const videoId = new VideoId("abcdefghijk");
 
@@ -103,14 +103,14 @@ describe("channels", () => {
                 },
               ],
             } satisfies ChannelApiResponse),
-        })
-      ) as jest.Mock
+        }),
+      ) as jest.Mock,
     );
   });
   afterEach(() => jest.clearAllMocks());
   test("confirm that request url and queries are expected. case handle", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const channelId = new ChannelId("@test");
 
@@ -127,7 +127,7 @@ describe("channels", () => {
 
   test("confirm that request url and queries are expected. case not handle.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const channelId = new ChannelId("testtesttesttesttesttest");
 
@@ -144,7 +144,7 @@ describe("channels", () => {
 
   test("correctly fetched data.", async () => {
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const channelId = new ChannelId("@test");
 
@@ -169,11 +169,11 @@ describe("channels", () => {
             Promise.resolve({
               error: {},
             }),
-        })
-      ) as jest.Mock
+        }),
+      ) as jest.Mock,
     );
     const api = new YoutubeDataApiV3(
-      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234")
+      new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
     );
     const channelId = new ChannelId("@test");
 

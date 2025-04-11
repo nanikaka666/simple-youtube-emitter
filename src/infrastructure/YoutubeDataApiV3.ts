@@ -2,11 +2,7 @@ import { ChannelId } from "../core/ChannelId";
 import { VideoId } from "../core/VideoId";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import {
-  ChannelApiResponse,
-  IYoutubeDataApiV3,
-  VideoApiResponse,
-} from "../types";
+import { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../types";
 
 export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
   readonly #credential: YoutubeApiKeyCredential;
@@ -26,7 +22,7 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const json = await res.json();
     if ("error" in json) {
       throw new YoutubeApiReturnsError(
-        "Youtube API returns an error. API key credential is maybe invalid."
+        "Youtube API returns an error. API key credential is maybe invalid.",
       );
     }
     return json as VideoApiResponse;
@@ -49,7 +45,7 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const json = await res.json();
     if ("error" in json) {
       throw new YoutubeApiReturnsError(
-        "Youtube API returns an error. API key credential is maybe invalid."
+        "Youtube API returns an error. API key credential is maybe invalid.",
       );
     }
     return json as ChannelApiResponse;

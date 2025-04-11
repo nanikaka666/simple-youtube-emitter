@@ -38,9 +38,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
           snippet: { title: "video title" },
           statistics: {
             likeCount: String(
-              this.#returnLikeCountArray[
-                this.#videosCalled++ % this.#returnLikeCountArray.length
-              ]
+              this.#returnLikeCountArray[this.#videosCalled++ % this.#returnLikeCountArray.length],
             ),
           },
         },
@@ -73,7 +71,7 @@ describe("Start events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onStart = jest.fn();
@@ -88,7 +86,7 @@ describe("Start events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onStart = jest.fn();
@@ -108,7 +106,7 @@ describe("Raised events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 5, 1, 3, 6]), // this sequence fire raised event two times.
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onRaised = jest.fn();
@@ -123,29 +121,13 @@ describe("Raised events", () => {
     expect(onRaised).toHaveBeenCalledTimes(2);
     expect(onRaised).toHaveBeenNthCalledWith(
       1,
-      new LikeCount(
-        new VideoId("VVVVVVVVVVV"),
-        new VideoTitle("video title"),
-        0
-      ),
-      new LikeCount(
-        new VideoId("VVVVVVVVVVV"),
-        new VideoTitle("video title"),
-        5
-      )
+      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("video title"), 0),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("video title"), 5),
     );
     expect(onRaised).toHaveBeenNthCalledWith(
       2,
-      new LikeCount(
-        new VideoId("VVVVVVVVVVV"),
-        new VideoTitle("video title"),
-        5
-      ),
-      new LikeCount(
-        new VideoId("VVVVVVVVVVV"),
-        new VideoTitle("video title"),
-        6
-      )
+      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("video title"), 5),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("video title"), 6),
     );
   });
 });
@@ -156,7 +138,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onEnd = jest.fn();
@@ -172,7 +154,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onEnd = jest.fn();
@@ -187,7 +169,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onEnd = jest.fn();
@@ -218,7 +200,7 @@ describe("Error events", () => {
                 <body></body>
             </html>`);
         }
-      })()
+      })(),
     );
 
     const onError = jest.fn();
@@ -244,7 +226,7 @@ describe("Error events", () => {
                 <body></body>
             </html>`);
         }
-      })()
+      })(),
     );
 
     const onError = jest.fn();
@@ -270,7 +252,7 @@ describe("Error events", () => {
                 <body></body>
             </html>`);
         }
-      })()
+      })(),
     );
 
     const onError = jest.fn();
@@ -299,7 +281,7 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onError = jest.fn();
@@ -328,7 +310,7 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch()
+      new FakeFetch(),
     );
 
     const onError = jest.fn();

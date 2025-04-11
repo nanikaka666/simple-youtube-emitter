@@ -12,11 +12,7 @@ export class LikeCountManager {
    * @param initialLikeCount
    */
   constructor(initialLikeCount: LikeCount) {
-    this.#bestSoFar = new LikeCount(
-      initialLikeCount.videoId,
-      initialLikeCount.videoTitle,
-      0
-    );
+    this.#bestSoFar = new LikeCount(initialLikeCount.videoId, initialLikeCount.videoTitle, 0);
   }
   update(nextLikeCount: LikeCount) {
     if (this.#bestSoFar.check(nextLikeCount)) {

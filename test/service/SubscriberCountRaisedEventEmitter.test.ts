@@ -1,9 +1,5 @@
 import { SubscriberCountRaisedEventEmitter } from "../../src/service/SubscriberCountRaisedEventEmitter";
-import type {
-  ChannelApiResponse,
-  IYoutubeDataApiV3,
-  VideoApiResponse,
-} from "../../src/types";
+import type { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../../src/types";
 import { ChannelId } from "../../src/core/ChannelId";
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { VideoId } from "../../src/core/VideoId";
@@ -39,7 +35,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
             subscriberCount: String(
               this.#returnSubscriberCountArray[
                 this.#channelsCalled++ % this.#returnSubscriberCountArray.length
-              ]
+              ],
             ),
           },
         },
@@ -61,7 +57,7 @@ describe("Start events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0])
+      new FakeYoutubeApi([0]),
     );
 
     const onStart = jest.fn();
@@ -75,7 +71,7 @@ describe("Start events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0])
+      new FakeYoutubeApi([0]),
     );
 
     const onStart = jest.fn();
@@ -94,7 +90,7 @@ describe("Raised events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0, 5, 1, 3, 6])
+      new FakeYoutubeApi([0, 5, 1, 3, 6]),
     );
 
     const onRaised = jest.fn();
@@ -109,29 +105,13 @@ describe("Raised events", () => {
     expect(onRaised).toHaveBeenCalledTimes(2);
     expect(onRaised).toHaveBeenNthCalledWith(
       1,
-      new SubscriberCount(
-        new ChannelId("@ChannelId"),
-        new ChannelTitle("channel title"),
-        0
-      ),
-      new SubscriberCount(
-        new ChannelId("@ChannelId"),
-        new ChannelTitle("channel title"),
-        5
-      )
+      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 0),
+      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 5),
     );
     expect(onRaised).toHaveBeenNthCalledWith(
       2,
-      new SubscriberCount(
-        new ChannelId("@ChannelId"),
-        new ChannelTitle("channel title"),
-        5
-      ),
-      new SubscriberCount(
-        new ChannelId("@ChannelId"),
-        new ChannelTitle("channel title"),
-        6
-      )
+      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 5),
+      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 6),
     );
   });
 });
@@ -141,7 +121,7 @@ describe("End events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0])
+      new FakeYoutubeApi([0]),
     );
 
     const onEnd = jest.fn();
@@ -156,7 +136,7 @@ describe("End events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0])
+      new FakeYoutubeApi([0]),
     );
 
     const onEnd = jest.fn();
@@ -170,7 +150,7 @@ describe("End events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0])
+      new FakeYoutubeApi([0]),
     );
 
     const onEnd = jest.fn();
@@ -206,7 +186,7 @@ describe("Error events", () => {
         channels(channelId: ChannelId): Promise<ChannelApiResponse> {
           throw new YoutubeApiReturnsError();
         }
-      })()
+      })(),
     );
 
     const onError = jest.fn();
@@ -236,7 +216,7 @@ describe("Error events", () => {
         channels(channelId: ChannelId): Promise<ChannelApiResponse> {
           throw new Error();
         }
-      })()
+      })(),
     );
 
     const onError = jest.fn();
