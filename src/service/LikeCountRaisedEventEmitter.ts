@@ -122,10 +122,10 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     if (this.#likeCountManager.update(nextLikeCount)) {
       this.emit("raised", currentLikeCount, nextLikeCount);
     }
-    setTimeout(this.#execute.bind(this), this.#interval.value);
+    setTimeout(() => this.#execute(), this.#interval.value);
   }
 
-  async start(): Promise<Boolean> {
+  async start(): Promise<boolean> {
     if (this.#isActivated) {
       return true;
     }
@@ -140,7 +140,7 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
 
     this.#likeCountManager = new LikeCountManager(initialLikeCount);
 
-    setTimeout(this.#execute.bind(this), this.#interval.value);
+    setTimeout(() => this.#execute(), this.#interval.value);
 
     this.#isActivated = true;
     this.emit("start");

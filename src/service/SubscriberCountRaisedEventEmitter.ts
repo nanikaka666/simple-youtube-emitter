@@ -66,10 +66,10 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     if (this.#subscriberCountManager.update(nextSubscriberCount)) {
       this.emit("raised", currentSubscribeCount, nextSubscriberCount);
     }
-    setTimeout(this.#execute.bind(this), this.#interval.value);
+    setTimeout(() => this.#execute(), this.#interval.value);
   }
 
-  async start(): Promise<Boolean> {
+  async start(): Promise<boolean> {
     if (this.#isActivated) {
       return true;
     }
@@ -81,7 +81,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
 
     this.#subscriberCountManager = new SubscriberCountManager(initialSubscriberCount);
 
-    setTimeout(this.#execute.bind(this), this.#interval.value);
+    setTimeout(() => this.#execute(), this.#interval.value);
 
     this.#isActivated = true;
     this.emit("start");

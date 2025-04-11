@@ -19,13 +19,13 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const url = `${videoApiUrl}?${query}`;
 
     const res = await fetch(url);
-    const json = await res.json();
+    const json = (await res.json()) as VideoApiResponse;
     if ("error" in json) {
       throw new YoutubeApiReturnsError(
         "Youtube API returns an error. API key credential is maybe invalid.",
       );
     }
-    return json as VideoApiResponse;
+    return json;
   }
 
   async channels(channelId: ChannelId): Promise<ChannelApiResponse> {
@@ -42,12 +42,12 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const url = `${channelApiUrl}?${query}`;
 
     const res = await fetch(url);
-    const json = await res.json();
+    const json = (await res.json()) as ChannelApiResponse;
     if ("error" in json) {
       throw new YoutubeApiReturnsError(
         "Youtube API returns an error. API key credential is maybe invalid.",
       );
     }
-    return json as ChannelApiResponse;
+    return json;
   }
 }
