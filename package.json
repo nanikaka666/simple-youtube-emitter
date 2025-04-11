@@ -6,7 +6,7 @@
   "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --randomize",
     "debug": "tsc && node dist/debug.js",
     "format-check": "prettier . --check",
     "format": "prettier . --write"
