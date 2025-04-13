@@ -55,5 +55,5 @@ jobs:
           cache: npm
       - name: Install npm modules
         run: npm install
-      - name: Exec prettier
+      - name: Exec test
         run: npm test
