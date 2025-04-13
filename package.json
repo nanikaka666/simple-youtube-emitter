@@ -1,6 +1,6 @@
 {
   "name": "simple-youtube-emitter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This simple module is specialized to emit two events in YouTube live streaming. That's a timing of raised number of subscribers of your channel and likes of streaming.",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
