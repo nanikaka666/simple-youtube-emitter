@@ -1,5 +1,8 @@
 # simple-youtube-emitter
 
+[![npm version](https://badge.fury.io/js/simple-youtube-emitter.svg)](https://badge.fury.io/js/simple-youtube-emitter)
+![NPM License](https://img.shields.io/npm/l/simple-youtube-emitter)
+
 This simple module is specialized to emit two events in Youtube live streaming.
 
 1. A timing of raised number of subscribers of your channel.
