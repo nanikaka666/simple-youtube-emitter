@@ -40,7 +40,7 @@ jobs:
         run: npm run format-check
 
   test:
-    name: Runs prettier
+    name: Runs test
     timeout-minutes: 1
     runs-on: ubuntu-latest
     steps:
