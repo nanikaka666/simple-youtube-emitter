@@ -84,7 +84,7 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
       }
 
       return new VideoId(id);
-    } catch (err) {
+    } catch (_err) {
       this.emit("error", new Error("Failed to get videoId via scraping YouTube page."));
     }
   }

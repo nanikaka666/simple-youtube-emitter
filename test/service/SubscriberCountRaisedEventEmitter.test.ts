@@ -14,7 +14,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
     this.#channelsCalled = 0;
     this.#returnSubscriberCountArray = [...subscriberCountArray];
   }
-  videos(videoId: VideoId): Promise<VideoApiResponse> {
+  videos(_videoId: VideoId): Promise<VideoApiResponse> {
     return Promise.resolve({
       items: [
         {
@@ -26,7 +26,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
       ],
     });
   }
-  channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+  channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
     return Promise.resolve({
       items: [
         {
@@ -132,7 +132,7 @@ describe("End events", () => {
     expect(onEnd).toHaveBeenCalled();
   });
 
-  test("End event will be not fired, before starting.", async () => {
+  test("End event will be not fired, before starting.", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
@@ -171,7 +171,7 @@ describe("Error events", () => {
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
       new (class implements IYoutubeDataApiV3 {
-        videos(videoId: VideoId): Promise<VideoApiResponse> {
+        videos(_videoId: VideoId): Promise<VideoApiResponse> {
           return Promise.resolve({
             items: [
               {
@@ -183,7 +183,7 @@ describe("Error events", () => {
             ],
           });
         }
-        channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+        channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
           throw new YoutubeApiReturnsError();
         }
       })(),
@@ -201,7 +201,7 @@ describe("Error events", () => {
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
       new (class implements IYoutubeDataApiV3 {
-        videos(videoId: VideoId): Promise<VideoApiResponse> {
+        videos(_videoId: VideoId): Promise<VideoApiResponse> {
           return Promise.resolve({
             items: [
               {
@@ -213,7 +213,7 @@ describe("Error events", () => {
             ],
           });
         }
-        channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+        channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
           throw new Error();
         }
       })(),
