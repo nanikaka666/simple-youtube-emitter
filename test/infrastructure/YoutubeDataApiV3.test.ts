@@ -36,7 +36,7 @@ describe("videos", () => {
 
     await api.videos(videoId);
 
-    const url = new URL(jest.mocked(fetch).mock.calls.at(0)!.toString());
+    const url = new URL(jest.mocked(fetch).mock.calls.at(0)?.[0] as string);
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(url.origin).toBe("https://www.googleapis.com");
@@ -65,7 +65,7 @@ describe("videos", () => {
     } satisfies VideoApiResponse);
   });
 
-  test("throw specific error, when youtube api returns value including error.", async () => {
+  test("throw specific error, when youtube api returns value including error.", () => {
     jest.spyOn(global, "fetch").mockImplementation(
       jest.fn(() =>
         Promise.resolve({
@@ -81,7 +81,7 @@ describe("videos", () => {
     );
     const videoId = new VideoId("abcdefghijk");
 
-    expect(api.videos(videoId)).rejects.toThrow(YoutubeApiReturnsError);
+    expect(api.videos(videoId).catch()).rejects.toThrow(YoutubeApiReturnsError);
   });
 });
 
@@ -116,7 +116,7 @@ describe("channels", () => {
 
     await api.channels(channelId);
 
-    const url = new URL(jest.mocked(fetch).mock.calls.at(0)!.toString());
+    const url = new URL(jest.mocked(fetch).mock.calls.at(0)?.[0] as string);
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(url.origin).toBe("https://www.googleapis.com");
@@ -133,7 +133,7 @@ describe("channels", () => {
 
     await api.channels(channelId);
 
-    const url = new URL(jest.mocked(fetch).mock.calls.at(0)!.toString());
+    const url = new URL(jest.mocked(fetch).mock.calls.at(0)?.[0] as string);
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(url.origin).toBe("https://www.googleapis.com");
@@ -161,7 +161,7 @@ describe("channels", () => {
       ],
     } satisfies ChannelApiResponse);
   });
-  test("throw specific error, when youtube api returns value including error.", async () => {
+  test("throw specific error, when youtube api returns value including error.", () => {
     jest.spyOn(global, "fetch").mockImplementation(
       jest.fn(() =>
         Promise.resolve({

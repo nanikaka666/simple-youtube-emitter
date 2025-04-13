@@ -13,7 +13,7 @@ import { VideoTitle } from "../../src/core/VideoTitle";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 
 class FakeFetch implements IFetchPage {
-  fetchAsString(url: string): Promise<string> {
+  fetchAsString(_url: string): Promise<string> {
     return Promise.resolve(`
 <html>
     <head>
@@ -31,7 +31,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
     this.#videosCalled = 0;
     this.#returnLikeCountArray = [...likeCountArray];
   }
-  videos(videoId: VideoId): Promise<VideoApiResponse> {
+  videos(_videoId: VideoId): Promise<VideoApiResponse> {
     return Promise.resolve({
       items: [
         {
@@ -45,7 +45,7 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
       ],
     });
   }
-  channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+  channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
     return Promise.resolve({
       items: [
         {
@@ -149,7 +149,7 @@ describe("End events", () => {
     expect(onEnd).toHaveBeenCalledTimes(1); // end event fired.
   });
 
-  test("End event will be not fired before starting.", async () => {
+  test("End event will be not fired before starting.", () => {
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
@@ -191,7 +191,7 @@ describe("Error events", () => {
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
       new (class implements IFetchPage {
-        fetchAsString(url: string): Promise<string> {
+        fetchAsString(_url: string): Promise<string> {
           // <link rel="canonical"> tag is missing.
           return Promise.resolve(`
             <html>
@@ -216,7 +216,7 @@ describe("Error events", () => {
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
       new (class implements IFetchPage {
-        fetchAsString(url: string): Promise<string> {
+        fetchAsString(_url: string): Promise<string> {
           // <link rel="canonical"> tag is missing.
           return Promise.resolve(`
             <html>
@@ -242,7 +242,7 @@ describe("Error events", () => {
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
       new (class implements IFetchPage {
-        fetchAsString(url: string): Promise<string> {
+        fetchAsString(_url: string): Promise<string> {
           // <link rel="canonical"> tag is missing.
           return Promise.resolve(`
             <html>
@@ -267,10 +267,10 @@ describe("Error events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new (class implements IYoutubeDataApiV3 {
-        videos(videoId: VideoId): Promise<VideoApiResponse> {
+        videos(_videoId: VideoId): Promise<VideoApiResponse> {
           throw new YoutubeApiReturnsError();
         }
-        channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+        channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
           return Promise.resolve({
             items: [
               {
@@ -296,10 +296,10 @@ describe("Error events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new (class implements IYoutubeDataApiV3 {
-        videos(videoId: VideoId): Promise<VideoApiResponse> {
+        videos(_videoId: VideoId): Promise<VideoApiResponse> {
           throw new Error();
         }
-        channels(channelId: ChannelId): Promise<ChannelApiResponse> {
+        channels(_channelId: ChannelId): Promise<ChannelApiResponse> {
           return Promise.resolve({
             items: [
               {
