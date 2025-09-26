@@ -10,6 +10,8 @@ import { ChannelId } from "../core/ChannelId";
 import { ChannelTitle } from "../core/ChannelTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
+import { YoutubeDataApiWithScraping } from "./YoutubeDataApiWithScraping";
+import { NodeFetch } from "../infrastructure/NodeFetch";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;
@@ -25,6 +27,15 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     this.#youtubeDataApi = youtubeDataApi;
     this.#isActivated = false;
   }
+
+  static initWithoutCredential(channelId: string, interval: number) {
+    return new this(
+      new ChannelId(channelId),
+      new SafePollingInterval(interval),
+      new YoutubeDataApiWithScraping(new NodeFetch()),
+    );
+  }
+
   static init(channelId: string, interval: number, credential: string) {
     return new this(
       new ChannelId(channelId),
