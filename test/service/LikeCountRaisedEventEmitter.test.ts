@@ -11,18 +11,14 @@ import { VideoId } from "../../src/core/VideoId";
 import { LikeCount } from "../../src/core/LikeCount";
 import { VideoTitle } from "../../src/core/VideoTitle";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
+import { FakeFetch } from "../util/FakeFetch";
 
-class FakeFetch implements IFetchPage {
-  fetchAsString(_url: string): Promise<string> {
-    return Promise.resolve(`
-<html>
+const fetchDummyValue = `<html>
     <head>
         <link rel="canonical" href="https://www.youtube.com/watch?v=VVVVVVVVVVV"/>
     </head>
     <body></body>
-</html>`);
-  }
-}
+</html>`;
 
 class FakeYoutubeApi implements IYoutubeDataApiV3 {
   #videosCalled: number;
@@ -71,7 +67,7 @@ describe("Start events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onStart = jest.fn();
@@ -86,7 +82,7 @@ describe("Start events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onStart = jest.fn();
@@ -106,7 +102,7 @@ describe("Raised events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 5, 1, 3, 6]), // this sequence fire raised event two times.
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onRaised = jest.fn();
@@ -138,7 +134,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -154,7 +150,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -169,7 +165,7 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -281,7 +277,7 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onError = jest.fn();
@@ -310,7 +306,7 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch(),
+      new FakeFetch(fetchDummyValue),
     );
 
     const onError = jest.fn();
