@@ -1,7 +1,6 @@
-import { ChannelId } from "youtube-live-scraper";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
-import { VideoId } from "../core/VideoId";
 
 export type LikeCountRaisedEvent = {
   raised: (before: LikeCount, after: LikeCount) => void;

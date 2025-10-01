@@ -1,5 +1,4 @@
-import { ChannelId } from "youtube-live-scraper";
-import { VideoId } from "../core/VideoId";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 import { ChannelApiResponse, IFetchPage, IYoutubeDataApiV3, VideoApiResponse } from "../types";
 import { parse } from "node-html-parser";
 import type { HTMLElement } from "node-html-parser";
