@@ -7,10 +7,9 @@ import type {
 } from "../../src/types";
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { LikeCount } from "../../src/core/LikeCount";
-import { VideoTitle } from "../../src/core/VideoTitle";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 import { FakeFetch } from "../util/FakeFetch";
-import { ChannelId, VideoId } from "youtube-live-scraper";
+import { ChannelId, VideoId, VideoTitle } from "youtube-live-scraper";
 
 const fetchDummyValue = `<html>
     <head>

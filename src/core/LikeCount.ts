@@ -1,6 +1,5 @@
-import { VideoId } from "youtube-live-scraper";
+import { VideoId, VideoTitle } from "youtube-live-scraper";
 import { CountBase } from "./CountBase";
-import { VideoTitle } from "./VideoTitle";
 
 export class LikeCount extends CountBase {
   readonly videoId: VideoId;

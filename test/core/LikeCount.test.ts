@@ -1,6 +1,5 @@
-import { VideoId } from "youtube-live-scraper";
+import { VideoId, VideoTitle } from "youtube-live-scraper";
 import { LikeCount } from "../../src/core/LikeCount";
-import { VideoTitle } from "../../src/core/VideoTitle";
 
 const validVideoId = new VideoId("abcdefghijk");
 const validVideoTitle = new VideoTitle("Valid Title");
