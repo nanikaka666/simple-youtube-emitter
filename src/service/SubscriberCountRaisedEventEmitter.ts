@@ -6,12 +6,12 @@ import { SubscriberCountManager } from "./SubscriberCountManager";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
-import { ChannelId } from "../core/ChannelId";
 import { ChannelTitle } from "../core/ChannelTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import { YoutubeDataApiWithScraping } from "./YoutubeDataApiWithScraping";
 import { NodeFetch } from "../infrastructure/NodeFetch";
+import { ChannelId } from "youtube-live-scraper";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;

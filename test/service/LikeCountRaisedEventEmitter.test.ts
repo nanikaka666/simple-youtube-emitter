@@ -5,13 +5,13 @@ import type {
   IYoutubeDataApiV3,
   VideoApiResponse,
 } from "../../src/types";
-import { ChannelId } from "../../src/core/ChannelId";
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { VideoId } from "../../src/core/VideoId";
 import { LikeCount } from "../../src/core/LikeCount";
 import { VideoTitle } from "../../src/core/VideoTitle";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 import { FakeFetch } from "../util/FakeFetch";
+import { ChannelId } from "youtube-live-scraper";
 
 const fetchDummyValue = `<html>
     <head>

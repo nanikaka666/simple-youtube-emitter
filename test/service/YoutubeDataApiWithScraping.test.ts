@@ -1,4 +1,4 @@
-import { ChannelId } from "../../src/core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import { VideoId } from "../../src/core/VideoId";
 import {
   LikeCountUnavailableError,

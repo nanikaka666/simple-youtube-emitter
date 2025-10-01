@@ -1,4 +1,4 @@
-import { ChannelId } from "./ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 import { ChannelTitle } from "./ChannelTitle";
 import { CountBase } from "./CountBase";
 

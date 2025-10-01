@@ -3,7 +3,7 @@ import { YoutubeApiKeyCredential } from "../../src/core/YoutubeApiKeyCredential"
 import { YoutubeDataApiV3 } from "../../src/infrastructure/YoutubeDataApiV3";
 import { ChannelApiResponse, VideoApiResponse } from "../../src/types";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
-import { ChannelId } from "../../src/core/ChannelId";
+import { ChannelId } from "youtube-live-scraper";
 
 describe("videos", () => {
   beforeEach(() => {

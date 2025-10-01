@@ -9,7 +9,6 @@ import { LikeCount } from "../core/LikeCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { VideoId } from "../core/VideoId";
-import { ChannelId } from "../core/ChannelId";
 import { VideoTitle } from "../core/VideoTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
@@ -17,6 +16,7 @@ import {
   LikeCountUnavailableError,
   YoutubeDataApiWithScraping,
 } from "./YoutubeDataApiWithScraping";
+import { ChannelId } from "youtube-live-scraper";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
