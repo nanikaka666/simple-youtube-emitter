@@ -1,5 +1,4 @@
-import { ChannelId } from "youtube-live-scraper";
-import { ChannelTitle } from "../../src/core/ChannelTitle";
+import { ChannelId, ChannelTitle } from "youtube-live-scraper";
 import { SubscriberCount } from "../../src/core/SubscriberCount";
 import { SubscriberCountManager } from "../../src/service/SubscriberCountManager";
 

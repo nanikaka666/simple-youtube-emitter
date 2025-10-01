@@ -4,8 +4,7 @@ import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { VideoId } from "../../src/core/VideoId";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 import { SubscriberCount } from "../../src/core/SubscriberCount";
-import { ChannelTitle } from "../../src/core/ChannelTitle";
-import { ChannelId } from "youtube-live-scraper";
+import { ChannelId, ChannelTitle } from "youtube-live-scraper";
 
 class FakeYoutubeApi implements IYoutubeDataApiV3 {
   #channelsCalled: number;
