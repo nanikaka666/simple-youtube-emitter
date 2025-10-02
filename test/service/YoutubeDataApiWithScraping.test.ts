@@ -51,7 +51,7 @@ describe("channels", () => {
     jest
       .spyOn(Scraper, "getChannelTitleFromChannelPage")
       .mockReturnValue(new ChannelTitle("Channel Name"));
-    jest.spyOn(Scraper, "getSubscriberCount").mockReturnValue(1750);
+    jest.spyOn(Scraper, "getSubscriberCountFromChannelPage").mockReturnValue(1750);
 
     const channelId = new ChannelId("@TestId");
     const res = await YoutubeDataApiWithScraping.channels(channelId);

@@ -28,7 +28,7 @@ export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
     const page = await PageFetcher.getChannelPage(channelId);
 
     const title = Scraper.getChannelTitleFromChannelPage(page);
-    const subscriberCount = Scraper.getSubscriberCount(page);
+    const subscriberCount = Scraper.getSubscriberCountFromChannelPage(page);
 
     return {
       items: [
