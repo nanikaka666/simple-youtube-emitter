@@ -1,22 +1,9 @@
 import { LikeCountRaisedEventEmitter } from "../../src/service/LikeCountRaisedEventEmitter";
-import type {
-  ChannelApiResponse,
-  IFetchPage,
-  IYoutubeDataApiV3,
-  VideoApiResponse,
-} from "../../src/types";
+import type { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../../src/types";
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { LikeCount } from "../../src/core/LikeCount";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
-import { FakeFetch } from "../util/FakeFetch";
-import { ChannelId, VideoId, VideoTitle } from "youtube-live-scraper";
-
-const fetchDummyValue = `<html>
-    <head>
-        <link rel="canonical" href="https://www.youtube.com/watch?v=VVVVVVVVVVV"/>
-    </head>
-    <body></body>
-</html>`;
+import { ChannelId, PageFetcher, VideoId, VideoTitle } from "youtube-live-scraper";
 
 class FakeYoutubeApi implements IYoutubeDataApiV3 {
   #videosCalled: number;
@@ -60,12 +47,20 @@ afterEach(() => {
 });
 
 describe("Start events", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(
+        jest.fn(() =>
+          Promise.resolve({ type: "video", videoId: new VideoId("VVVVVVVVVVV") }),
+        ) as jest.Mock,
+      );
+  });
   test("Start event will be fired correctly.", async () => {
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onStart = jest.fn();
@@ -80,7 +75,6 @@ describe("Start events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 1]),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onStart = jest.fn();
@@ -95,12 +89,21 @@ describe("Start events", () => {
 });
 
 describe("Raised events", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(
+        jest.fn(() =>
+          Promise.resolve({ type: "video", videoId: new VideoId("VVVVVVVVVVV") }),
+        ) as jest.Mock,
+      );
+  });
+
   test("Raised event will be fired correctly.", async () => {
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0, 5, 1, 3, 6]), // this sequence fire raised event two times.
-      new FakeFetch(fetchDummyValue),
     );
 
     const onRaised = jest.fn();
@@ -127,12 +130,20 @@ describe("Raised events", () => {
 });
 
 describe("End events", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(
+        jest.fn(() =>
+          Promise.resolve({ type: "video", videoId: new VideoId("VVVVVVVVVVV") }),
+        ) as jest.Mock,
+      );
+  });
   test("End event will be fired correctly.", async () => {
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -148,7 +159,6 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -163,7 +173,6 @@ describe("End events", () => {
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onEnd = jest.fn();
@@ -180,21 +189,14 @@ describe("End events", () => {
 
 describe("Error events", () => {
   test("The channel don't have streaming or upcoming live, error event will be fired", async () => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(jest.fn(() => Promise.resolve({ type: "channel" })) as jest.Mock);
+
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new (class implements IFetchPage {
-        fetchAsString(_url: string): Promise<string> {
-          // <link rel="canonical"> tag is missing.
-          return Promise.resolve(`
-            <html>
-                <head>
-                </head>
-                <body></body>
-            </html>`);
-        }
-      })(),
     );
 
     const onError = jest.fn();
@@ -204,49 +206,17 @@ describe("Error events", () => {
     expect(onError).toHaveBeenCalled();
   });
 
-  test("if link rel tag don't have href attributea, error event will be fired.", async () => {
-    const emitter = new LikeCountRaisedEventEmitter(
-      new ChannelId("@channelId"),
-      new SafePollingInterval(10 * 1000),
-      new FakeYoutubeApi([0]),
-      new (class implements IFetchPage {
-        fetchAsString(_url: string): Promise<string> {
-          // <link rel="canonical"> tag is missing.
-          return Promise.resolve(`
-            <html>
-                <head>
-                    <link rel="canonical"/>
-                </head>
-                <body></body>
-            </html>`);
-        }
-      })(),
+  test("if fail to fetch live page, error event will be fired.", async () => {
+    jest.spyOn(PageFetcher, "getLivePage").mockImplementation(
+      jest.fn(() => {
+        throw new Error();
+      }) as jest.Mock,
     );
 
-    const onError = jest.fn();
-    emitter.on("error", onError);
-
-    expect(await emitter.start()).toBe(false);
-    expect(onError).toHaveBeenCalled();
-  });
-
-  test("if href attribute has odd video url, error event will be fired.", async () => {
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
       new FakeYoutubeApi([0]),
-      new (class implements IFetchPage {
-        fetchAsString(_url: string): Promise<string> {
-          // <link rel="canonical"> tag is missing.
-          return Promise.resolve(`
-            <html>
-                <head>
-                    <link rel="canonical" href="https://www.youtube.com/watch/v/VVVVVVVVVVV"/>
-                </head>
-                <body></body>
-            </html>`);
-        }
-      })(),
     );
 
     const onError = jest.fn();
@@ -257,6 +227,14 @@ describe("Error events", () => {
   });
 
   test("if youtube API returns error response, error event will be fired.", async () => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(
+        jest.fn(() =>
+          Promise.resolve({ type: "video", videoId: new VideoId("VVVVVVVVVVV") }),
+        ) as jest.Mock,
+      );
+
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
@@ -275,7 +253,6 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onError = jest.fn();
@@ -286,6 +263,14 @@ describe("Error events", () => {
   });
 
   test("if videos method returns error response, error event will be fired.", async () => {
+    jest
+      .spyOn(PageFetcher, "getLivePage")
+      .mockImplementation(
+        jest.fn(() =>
+          Promise.resolve({ type: "video", videoId: new VideoId("VVVVVVVVVVV") }),
+        ) as jest.Mock,
+      );
+
     const emitter = new LikeCountRaisedEventEmitter(
       new ChannelId("@channelId"),
       new SafePollingInterval(10 * 1000),
@@ -304,7 +289,6 @@ describe("Error events", () => {
           });
         }
       })(),
-      new FakeFetch(fetchDummyValue),
     );
 
     const onError = jest.fn();
