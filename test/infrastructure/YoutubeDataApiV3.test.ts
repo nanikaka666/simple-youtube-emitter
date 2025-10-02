@@ -4,6 +4,8 @@ import { ChannelApiResponse, VideoApiResponse } from "../../src/types";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 import { ChannelId, VideoId } from "youtube-live-scraper";
 
+afterEach(() => jest.clearAllMocks());
+
 describe("videos", () => {
   beforeEach(() => {
     jest.spyOn(global, "fetch").mockImplementation(
@@ -19,7 +21,7 @@ describe("videos", () => {
                   statistics: {
                     likeCount: "8",
                   },
-                  liveStreamingDetails: { concurrentViewers: "0" },
+                  liveStreamingDetails: { concurrentViewers: "150" },
                 },
               ],
             } satisfies VideoApiResponse),
@@ -27,7 +29,6 @@ describe("videos", () => {
       ) as jest.Mock,
     );
   });
-  afterEach(() => jest.clearAllMocks());
   test("confirm that request url and queries are expected.", async () => {
     const api = new YoutubeDataApiV3(
       new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
@@ -61,7 +62,7 @@ describe("videos", () => {
             likeCount: "8",
           },
           liveStreamingDetails: {
-            concurrentViewers: "0",
+            concurrentViewers: "150",
           },
         },
       ],
@@ -110,7 +111,7 @@ describe("channels", () => {
       ) as jest.Mock,
     );
   });
-  afterEach(() => jest.clearAllMocks());
+
   test("confirm that request url and queries are expected. case handle", async () => {
     const api = new YoutubeDataApiV3(
       new YoutubeApiKeyCredential("aaaaabbbbbcccccdddddeeeeefffffggggg1234"),
