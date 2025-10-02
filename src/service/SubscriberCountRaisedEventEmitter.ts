@@ -30,7 +30,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiWithScraping(),
+      YoutubeDataApiWithScraping,
     );
   }
 

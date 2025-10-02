@@ -22,9 +22,8 @@ describe("videos", () => {
     jest.spyOn(Scraper, "getVideoTitle").mockReturnValue(new VideoTitle("Video Title"));
 
     const videoId = new VideoId("VVVVVVVVVVV");
-    const scraping = new YoutubeDataApiWithScraping();
 
-    const res = await scraping.videos(videoId);
+    const res = await YoutubeDataApiWithScraping.videos(videoId);
     expect(res).toEqual({
       items: [{ snippet: { title: "Video Title" }, statistics: { likeCount: "229" } }],
     } satisfies VideoApiResponse);
@@ -34,10 +33,9 @@ describe("videos", () => {
     jest.spyOn(Scraper, "getLikeCount").mockReturnValue(undefined);
 
     const videoId = new VideoId("VVVVVVVVVVV");
-    const scraping = new YoutubeDataApiWithScraping();
 
     expect(async () => {
-      await scraping.videos(videoId);
+      await YoutubeDataApiWithScraping.videos(videoId);
     }).rejects.toThrow(LikeCountUnavailableError);
   });
 });
@@ -56,8 +54,7 @@ describe("channels", () => {
     jest.spyOn(Scraper, "getSubscriberCount").mockReturnValue(1750);
 
     const channelId = new ChannelId("@TestId");
-    const scraping = new YoutubeDataApiWithScraping();
-    const res = await scraping.channels(channelId);
+    const res = await YoutubeDataApiWithScraping.channels(channelId);
     expect(res).toEqual({
       items: [
         {

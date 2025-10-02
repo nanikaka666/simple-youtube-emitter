@@ -3,7 +3,7 @@ import { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../type
 
 export class LikeCountUnavailableError extends Error {}
 
-export class YoutubeDataApiWithScraping implements IYoutubeDataApiV3 {
+export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
   async videos(videoId: VideoId): Promise<VideoApiResponse> {
     const page = await PageFetcher.getVideoPage(videoId);
     const likeCount = Scraper.getLikeCount(page);
@@ -22,7 +22,7 @@ export class YoutubeDataApiWithScraping implements IYoutubeDataApiV3 {
         },
       ],
     };
-  }
+  },
 
   async channels(channelId: ChannelId): Promise<ChannelApiResponse> {
     const page = await PageFetcher.getChannelPage(channelId);
@@ -38,5 +38,5 @@ export class YoutubeDataApiWithScraping implements IYoutubeDataApiV3 {
         },
       ],
     };
-  }
-}
+  },
+};

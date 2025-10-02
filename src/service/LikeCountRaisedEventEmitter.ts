@@ -42,7 +42,7 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiWithScraping(fetch),
+      YoutubeDataApiWithScraping,
       fetch,
     );
   }
