@@ -70,6 +70,8 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
       } else {
         this.emit("error", new Error("Fail to fetch like count."));
       }
+
+      return undefined;
     }
   }
 
