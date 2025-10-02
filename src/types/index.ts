@@ -68,7 +68,7 @@ export interface IYoutubeDataApiV3 {
 }
 
 export interface LikeCountFetcher {
-  get(videoId: VideoId): Promise<LikeCount>;
+  get(videoId: VideoId): Promise<LikeCount | undefined>;
 }
 
 export interface LiveViewCountFetcher {
