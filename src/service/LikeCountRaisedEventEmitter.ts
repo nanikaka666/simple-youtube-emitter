@@ -1,51 +1,38 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { parse } from "node-html-parser";
-import { IFetchPage, IYoutubeDataApiV3, LikeCountRaisedEvent } from "../types";
-import { NodeFetch } from "../infrastructure/NodeFetch";
+import { IYoutubeDataApiV3, LikeCountRaisedEvent } from "../types";
 import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
 import { LikeCountManager } from "./LikeCountManager";
 import { LikeCount } from "../core/LikeCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
-import { VideoId } from "../core/VideoId";
-import { ChannelId } from "../core/ChannelId";
-import { VideoTitle } from "../core/VideoTitle";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import {
   LikeCountUnavailableError,
   YoutubeDataApiWithScraping,
 } from "./YoutubeDataApiWithScraping";
+import { ChannelId, PageFetcher, VideoId, VideoTitle } from "youtube-live-scraper";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
   readonly #interval: PollingInterval;
   readonly #youtubeDataApi: IYoutubeDataApiV3;
-  readonly #fetchPage: IFetchPage;
   #likeCountManager?: LikeCountManager;
   #isActivated: boolean;
-  constructor(
-    channelId: ChannelId,
-    interval: PollingInterval,
-    youtubeDataApi: IYoutubeDataApiV3,
-    fetchPage: IFetchPage,
-  ) {
+  constructor(channelId: ChannelId, interval: PollingInterval, youtubeDataApi: IYoutubeDataApiV3) {
     super();
 
     this.#channelId = channelId;
     this.#interval = interval;
     this.#youtubeDataApi = youtubeDataApi;
-    this.#fetchPage = fetchPage;
     this.#isActivated = false;
   }
   static initWithoutCredential(channelId: string, interval: number) {
-    const fetch = new NodeFetch();
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiWithScraping(fetch),
-      fetch,
+      YoutubeDataApiWithScraping,
     );
   }
   static init(channelId: string, interval: number, credential: string) {
@@ -53,52 +40,21 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
       new ChannelId(channelId),
       new SafePollingInterval(interval),
       new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
-      new NodeFetch(),
     );
   }
+
   async #getVideoId(): Promise<VideoId | undefined> {
     try {
-      const livePageUrl = this.#channelId.isHandle
-        ? `https://www.youtube.com/${this.#channelId.id}/live`
-        : `https://www.youtube.com/channel/${this.#channelId.id}/live`;
-      const body = await this.#fetchPage.fetchAsString(livePageUrl);
-      const parsedBody = parse(body);
-      const element = parsedBody.querySelector('link[rel="canonical"]');
-      if (element === null) {
-        this.emit("error", new Error(`Given channel doesn't have streaming or upcoming live.`));
+      const page = await PageFetcher.getLivePage(this.#channelId);
+      if (page.type !== "video") {
+        this.emit("error", new Error("This channel has no live-streaming or upcoming live."));
         return undefined;
       }
 
-      const href = element.getAttribute("href");
-      if (href === undefined) {
-        this.emit(
-          "error",
-          new Error("<link> element doesn't have href. Youtube DOM maybe changed."),
-        );
-        return undefined;
-      }
-
-      const matchResult = href.match(/^https:\/\/www\.youtube\.com\/watch\?v=(.+)$/);
-
-      if (matchResult === null) {
-        this.emit(
-          "error",
-          new Error(
-            "This channel has no live-streaming or upcoming live, or content of href attribute is maybe changed.",
-          ),
-        );
-        return undefined;
-      }
-
-      const id = matchResult.at(1);
-      if (id === undefined) {
-        this.emit("error", new Error("YouTube videoId format maybe changed."));
-        return undefined;
-      }
-
-      return new VideoId(id);
+      return page.videoId;
     } catch (_err) {
       this.emit("error", new Error("Failed to get videoId via scraping YouTube page."));
+      return undefined;
     }
   }
 

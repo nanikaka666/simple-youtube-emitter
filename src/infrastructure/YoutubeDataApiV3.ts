@@ -1,5 +1,4 @@
-import { ChannelId } from "../core/ChannelId";
-import { VideoId } from "../core/VideoId";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../types";

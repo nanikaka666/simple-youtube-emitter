@@ -1,5 +1,4 @@
-import { ChannelId } from "./ChannelId";
-import { ChannelTitle } from "./ChannelTitle";
+import { ChannelId, ChannelTitle } from "youtube-live-scraper";
 import { CountBase } from "./CountBase";
 
 export class SubscriberCount extends CountBase {

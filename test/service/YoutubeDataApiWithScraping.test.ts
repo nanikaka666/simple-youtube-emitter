@@ -1,88 +1,60 @@
-import { ChannelId } from "../../src/core/ChannelId";
-import { VideoId } from "../../src/core/VideoId";
+import { ChannelId, ChannelTitle, VideoId, VideoTitle } from "youtube-live-scraper";
 import {
   LikeCountUnavailableError,
   YoutubeDataApiWithScraping,
 } from "../../src/service/YoutubeDataApiWithScraping";
 import { ChannelApiResponse, VideoApiResponse } from "../../src/types";
-import { FakeFetch } from "../util/FakeFetch";
+import { PageFetcher, Scraper } from "youtube-live-scraper";
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("videos", () => {
-  test("return like count successfully.", async () => {
-    const videoId = new VideoId("VVVVVVVVVVV");
-    const fakeReturnValue = `
-    <head>
-        <meta name="title" content="Video Title">
-    </head>
-    <body>
-        <div itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
-            <meta itemprop="interactionType" content="https://schema.org/LikeAction">
-            <meta itemprop="userInteractionCount" content="229">
-        </div>
-    </body>
-    `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
+  beforeEach(() => {
+    jest
+      .spyOn(PageFetcher, "getVideoPage")
+      .mockImplementation(jest.fn(() => Promise.resolve({ type: "video" })) as jest.Mock);
+  });
 
-    const res = await scraping.videos(videoId);
+  test("return like count successfully.", async () => {
+    jest.spyOn(Scraper, "getLikeCount").mockReturnValue(229);
+    jest.spyOn(Scraper, "getVideoTitle").mockReturnValue(new VideoTitle("Video Title"));
+
+    const videoId = new VideoId("VVVVVVVVVVV");
+
+    const res = await YoutubeDataApiWithScraping.videos(videoId);
     expect(res).toEqual({
       items: [{ snippet: { title: "Video Title" }, statistics: { likeCount: "229" } }],
     } satisfies VideoApiResponse);
   });
 
   test("when like count is unavailable, because of the video's config, then an exception will be thrown.", () => {
+    jest.spyOn(Scraper, "getLikeCount").mockReturnValue(undefined);
+
     const videoId = new VideoId("VVVVVVVVVVV");
-    const fakeReturnValue = `
-    <head>
-        <meta name="title" content="Video Title">
-    </head>
-    <body>
-    </body>
-    `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
 
     expect(async () => {
-      await scraping.videos(videoId);
+      await YoutubeDataApiWithScraping.videos(videoId);
     }).rejects.toThrow(LikeCountUnavailableError);
-  });
-
-  test("when Youtube changes DOM (i.e. tag names, dom structures), then an exception will be thrown.", () => {
-    const videoId = new VideoId("VVVVVVVVVVV");
-    const fakeReturnValue = `
-    <head>
-        <meta name="title" content="Video Title">
-    </head>
-    <body>
-        <div itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
-            <meta itemprop="interactionType" content="https://schema.org/LikeAction">
-            <meta itemprop="ChangesHereName" content="229">
-        </div>
-    </body>
-    `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
-
-    expect(async () => {
-      await scraping.videos(videoId);
-    }).rejects.toThrow(Error);
   });
 });
 
 describe("channels", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(PageFetcher, "getChannelPage")
+      .mockImplementation(jest.fn(() => Promise.resolve({ type: "channel" })) as jest.Mock);
+  });
+
   test("return subscriber count successfully.", async () => {
+    jest
+      .spyOn(Scraper, "getChannelTitleFromChannelPage")
+      .mockReturnValue(new ChannelTitle("Channel Name"));
+    jest.spyOn(Scraper, "getSubscriberCountFromChannelPage").mockReturnValue(1750);
+
     const channelId = new ChannelId("@TestId");
-    const fakeReturnValue = `
-        <head>
-            <meta itemprop="name" content="Channel Name">
-            <script>{"metadataParts":[{"text":{"content":"チャンネル登録者数 1750人"}</script>
-        </head>
-        <body>
-        </body>
-        `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
-    const res = await scraping.channels(channelId);
+    const res = await YoutubeDataApiWithScraping.channels(channelId);
     expect(res).toEqual({
       items: [
         {
@@ -91,62 +63,5 @@ describe("channels", () => {
         },
       ],
     } satisfies ChannelApiResponse);
-  });
-
-  test("return subscriber count successfully when count is over 10,000.", async () => {
-    const channelId = new ChannelId("@TestId");
-    const fakeReturnValue = `
-        <head>
-            <meta itemprop="name" content="Channel Name">
-            <script>{"metadataParts":[{"text":{"content":"チャンネル登録者数 18.8万人"}</script>
-        </head>
-        <body>
-        </body>
-        `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
-    const res = await scraping.channels(channelId);
-    expect(res).toEqual({
-      items: [
-        {
-          snippet: { title: "Channel Name" },
-          statistics: { subscriberCount: "188000" },
-        },
-      ],
-    } satisfies ChannelApiResponse);
-  });
-
-  test("when Youtube changes DOM (i.e. tag names, dom structures), then an exception will be thrown.", () => {
-    const channelId = new ChannelId("@TestId");
-    const fakeReturnValue = `
-        <head>
-            <meta itemprop="ChangesHere" content="Channel Name">
-            <script>{"metadataParts":[{"text":{"content":"チャンネル登録者数 18.8万人"}</script>
-        </head>
-        <body>
-        </body>
-        `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
-    expect(async () => {
-      await scraping.channels(channelId);
-    }).rejects.toThrow(Error);
-  });
-
-  test("when fetching with non Japanese launguage, then an exception will be thrown.", () => {
-    const channelId = new ChannelId("@TestId");
-    const fakeReturnValue = `
-        <head>
-            <meta itemprop="ChangesHere" content="Channel Name">
-            <script>{"metadataParts":[{"text":{"content":"18.8K Subscribers"}</script>
-        </head>
-        <body>
-        </body>
-        `;
-    const fake = new FakeFetch(fakeReturnValue);
-    const scraping = new YoutubeDataApiWithScraping(fake);
-    expect(async () => {
-      await scraping.channels(channelId);
-    }).rejects.toThrow(Error);
   });
 });
