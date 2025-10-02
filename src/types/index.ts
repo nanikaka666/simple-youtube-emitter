@@ -1,6 +1,7 @@
 import { ChannelId, VideoId } from "youtube-live-scraper";
 import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
+import { LiveViewCount } from "../core/LiveViewCount";
 
 export type LikeCountRaisedEvent = {
   raised: (before: LikeCount, after: LikeCount) => void;
@@ -11,6 +12,13 @@ export type LikeCountRaisedEvent = {
 
 export type SubscriberCountRaisedEvent = {
   raised: (before: SubscriberCount, after: SubscriberCount) => void;
+  start: () => void;
+  end: () => void;
+  error: (err: Error) => void;
+};
+
+export type LiveViewCountRaisedEvent = {
+  raised: (before: LiveViewCount, after: LiveViewCount) => void;
   start: () => void;
   end: () => void;
   error: (err: Error) => void;
