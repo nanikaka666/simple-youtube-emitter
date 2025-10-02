@@ -13,7 +13,7 @@ export class YoutubeDataApiV3 implements IYoutubeDataApiV3 {
     const query = new URLSearchParams({
       id: videoId.id,
       key: this.#credential.credential,
-      part: ["snippet", "statistics"].join(","),
+      part: ["snippet", "statistics", "liveStreamingDetails"].join(","),
     });
     const url = `${videoApiUrl}?${query}`;
 

@@ -22,6 +22,9 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
               this.#returnLikeCountArray[this.#videosCalled++ % this.#returnLikeCountArray.length],
             ),
           },
+          liveStreamingDetails: {
+            concurrentViewers: "0",
+          },
         },
       ],
     });

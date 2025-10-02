@@ -20,17 +20,25 @@ describe("videos", () => {
   test("return like count successfully.", async () => {
     jest.spyOn(Scraper, "getLikeCount").mockReturnValue(229);
     jest.spyOn(Scraper, "getVideoTitle").mockReturnValue(new VideoTitle("Video Title"));
+    jest.spyOn(Scraper, "getLiveViewCount").mockReturnValue(0);
 
     const videoId = new VideoId("VVVVVVVVVVV");
 
     const res = await YoutubeDataApiWithScraping.videos(videoId);
     expect(res).toEqual({
-      items: [{ snippet: { title: "Video Title" }, statistics: { likeCount: "229" } }],
+      items: [
+        {
+          snippet: { title: "Video Title" },
+          statistics: { likeCount: "229" },
+          liveStreamingDetails: { concurrentViewers: "0" },
+        },
+      ],
     } satisfies VideoApiResponse);
   });
 
   test("when like count is unavailable, because of the video's config, then an exception will be thrown.", () => {
     jest.spyOn(Scraper, "getLikeCount").mockReturnValue(undefined);
+    jest.spyOn(Scraper, "getLiveViewCount").mockReturnValue(0);
 
     const videoId = new VideoId("VVVVVVVVVVV");
 

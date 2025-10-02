@@ -20,6 +20,9 @@ class FakeYoutubeApi implements IYoutubeDataApiV3 {
           statistics: {
             likeCount: "0",
           },
+          liveStreamingDetails: {
+            concurrentViewers: "0",
+          },
         },
       ],
     });
@@ -177,6 +180,9 @@ describe("Error events", () => {
                 statistics: {
                   likeCount: "0",
                 },
+                liveStreamingDetails: {
+                  concurrentViewers: "0",
+                },
               },
             ],
           });
@@ -207,6 +213,7 @@ describe("Error events", () => {
                 statistics: {
                   likeCount: "0",
                 },
+                liveStreamingDetails: { concurrentViewers: "0" },
               },
             ],
           });

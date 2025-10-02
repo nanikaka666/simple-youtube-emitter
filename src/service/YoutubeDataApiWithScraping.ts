@@ -7,6 +7,7 @@ export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
   async videos(videoId: VideoId): Promise<VideoApiResponse> {
     const page = await PageFetcher.getVideoPage(videoId);
     const likeCount = Scraper.getLikeCount(page);
+    const liveViewCount = Scraper.getLiveViewCount(page);
 
     if (!likeCount) {
       throw new LikeCountUnavailableError();
@@ -19,6 +20,7 @@ export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
         {
           snippet: { title: title.title },
           statistics: { likeCount: likeCount.toString() },
+          liveStreamingDetails: { concurrentViewers: liveViewCount.toString() },
         },
       ],
     };

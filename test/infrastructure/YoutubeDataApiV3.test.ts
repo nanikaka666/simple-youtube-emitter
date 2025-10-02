@@ -19,6 +19,7 @@ describe("videos", () => {
                   statistics: {
                     likeCount: "8",
                   },
+                  liveStreamingDetails: { concurrentViewers: "0" },
                 },
               ],
             } satisfies VideoApiResponse),
@@ -58,6 +59,9 @@ describe("videos", () => {
           },
           statistics: {
             likeCount: "8",
+          },
+          liveStreamingDetails: {
+            concurrentViewers: "0",
           },
         },
       ],

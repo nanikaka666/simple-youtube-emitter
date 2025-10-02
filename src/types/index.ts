@@ -28,8 +28,18 @@ export interface VideoSnippetResponse {
   title: string;
 }
 
+export interface LiveStreamingDetailsResponse {
+  concurrentViewers: string;
+}
+
 export interface VideoApiResponse {
-  items: [{ snippet: VideoSnippetResponse; statistics: VideoStatisticsResponse }];
+  items: [
+    {
+      snippet: VideoSnippetResponse;
+      statistics: VideoStatisticsResponse;
+      liveStreamingDetails: LiveStreamingDetailsResponse;
+    },
+  ];
 }
 
 export interface ChannelStatisticsResponse {
