@@ -6,9 +6,10 @@ import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import { ChannelId, PageFetcher, VideoId } from "youtube-live-scraper";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 import { LikeCountFetcherViaScraping } from "./LikeCountFetcherViaScraping";
 import { LikeCountFetcherViaYoutubeDataApi } from "./LikeCountFetcherViaYoutubeDataApi";
+import { ClosestLiveVideoIdFetcher } from "./ClosestLiveVideoIdFetcher";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
@@ -39,17 +40,21 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     );
   }
 
-  async #getVideoId(): Promise<VideoId | undefined> {
+  async #getVideoId() {
     try {
-      const page = await PageFetcher.getLivePage(this.#channelId);
-      if (page.type !== "video") {
+      const res = await ClosestLiveVideoIdFetcher.get(this.#channelId);
+      if (res === undefined) {
         this.emit("error", new Error("This channel has no live-streaming or upcoming live."));
         return undefined;
       }
+      return res;
+    } catch (e) {
+      if (e instanceof Error) {
+        this.emit("error", e);
+      } else {
+        this.emit("error", new Error("Failed to get closest live video id."));
+      }
 
-      return page.videoId;
-    } catch (_err) {
-      this.emit("error", new Error("Failed to get videoId via scraping YouTube page."));
       return undefined;
     }
   }
@@ -86,7 +91,7 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     setTimeout(() => this.#execute(), this.#interval.value);
   }
 
-  async start(): Promise<boolean> {
+  async start() {
     if (this.#isActivated) {
       return true;
     }
