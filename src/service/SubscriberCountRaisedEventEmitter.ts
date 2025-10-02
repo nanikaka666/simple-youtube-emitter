@@ -8,7 +8,7 @@ import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import { YoutubeDataApiWithScraping } from "./YoutubeDataApiWithScraping";
+import { YoutubeDataApiWithScraping } from "../infrastructure/YoutubeDataApiWithScraping";
 import { ChannelId, ChannelTitle } from "youtube-live-scraper";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {

@@ -1,5 +1,5 @@
 import { ChannelId, ChannelTitle, VideoId, VideoTitle } from "youtube-live-scraper";
-import { YoutubeDataApiWithScraping } from "../../src/service/YoutubeDataApiWithScraping";
+import { YoutubeDataApiWithScraping } from "../../src/infrastructure/YoutubeDataApiWithScraping";
 import { ChannelApiResponse, VideoApiResponse } from "../../src/types";
 import { PageFetcher, Scraper } from "youtube-live-scraper";
 
