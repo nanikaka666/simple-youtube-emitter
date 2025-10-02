@@ -8,10 +8,7 @@ import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import {
-  LikeCountUnavailableError,
-  YoutubeDataApiWithScraping,
-} from "./YoutubeDataApiWithScraping";
+import { YoutubeDataApiWithScraping } from "./YoutubeDataApiWithScraping";
 import { ChannelId, PageFetcher, VideoId, VideoTitle } from "youtube-live-scraper";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
@@ -69,8 +66,6 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
       );
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
-        this.emit("error", err);
-      } else if (err instanceof LikeCountUnavailableError) {
         this.emit("error", err);
       } else {
         this.emit("error", new Error("Failed to get like count via YouTube videos API."));

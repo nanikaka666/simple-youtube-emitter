@@ -1,17 +1,11 @@
 import { ChannelId, PageFetcher, Scraper, VideoId } from "youtube-live-scraper";
 import { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "../types";
 
-export class LikeCountUnavailableError extends Error {}
-
 export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
   async videos(videoId: VideoId): Promise<VideoApiResponse> {
     const page = await PageFetcher.getVideoPage(videoId);
     const likeCount = Scraper.getLikeCount(page);
     const liveViewCount = Scraper.getLiveViewCount(page);
-
-    if (!likeCount) {
-      throw new LikeCountUnavailableError();
-    }
 
     const title = Scraper.getVideoTitle(page);
 
@@ -19,7 +13,7 @@ export const YoutubeDataApiWithScraping: IYoutubeDataApiV3 = {
       items: [
         {
           snippet: { title: title.title },
-          statistics: { likeCount: likeCount.toString() },
+          statistics: { likeCount: (likeCount ?? 0).toString() },
           liveStreamingDetails: { concurrentViewers: liveViewCount.toString() },
         },
       ],
