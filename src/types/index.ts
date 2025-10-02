@@ -66,3 +66,15 @@ export interface IYoutubeDataApiV3 {
   videos(videoId: VideoId): Promise<VideoApiResponse>;
   channels(channelId: ChannelId): Promise<ChannelApiResponse>;
 }
+
+export interface LikeCountFetcher {
+  get(videoId: VideoId): Promise<LikeCount>;
+}
+
+export interface LiveViewCountFetcher {
+  get(videoId: VideoId): Promise<LiveViewCount>;
+}
+
+export interface SubscribeCountFetcher {
+  get(channelId: ChannelId): Promise<SubscriberCount>;
+}
