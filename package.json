@@ -49,8 +49,6 @@
     "typescript-eslint": "^8.29.1"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "node-html-parser": "^7.0.1",
     "typed-emitter": "^2.1.0",
     "youtube-live-scraper": "^0.1.2"
   }
