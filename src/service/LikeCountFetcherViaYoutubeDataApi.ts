@@ -1,4 +1,4 @@
-import { VideoId, VideoTitle } from "youtube-live-scraper";
+import { VideoId } from "youtube-live-scraper";
 import { LikeCount } from "../core/LikeCount";
 import { LikeCountFetcher } from "../types";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
@@ -12,7 +12,6 @@ export class LikeCountFetcherViaYoutubeDataApi implements LikeCountFetcher {
   async get(videoId: VideoId) {
     return new LikeCount(
       videoId,
-      new VideoTitle(""),
       await YoutubeDataApiV3Client.getLikeCount(this.#credential, videoId),
     );
   }

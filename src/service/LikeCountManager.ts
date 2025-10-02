@@ -8,11 +8,10 @@ export class LikeCountManager {
    *
    * If the video is already liked when this module runs, the first event will must be emitted.
    * That's why let set it to 0.
-   * The parameter which constructor received is used for get the id and its title.
-   * @param initialLikeCount
+   * The parameter which constructor received is used for get the id.
    */
   constructor(initialLikeCount: LikeCount) {
-    this.#bestSoFar = new LikeCount(initialLikeCount.videoId, initialLikeCount.videoTitle, 0);
+    this.#bestSoFar = new LikeCount(initialLikeCount.videoId, 0);
   }
   update(nextLikeCount: LikeCount) {
     if (this.#bestSoFar.check(nextLikeCount)) {

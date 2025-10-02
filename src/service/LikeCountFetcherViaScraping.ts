@@ -1,4 +1,4 @@
-import { PageFetcher, Scraper, VideoId, VideoTitle } from "youtube-live-scraper";
+import { PageFetcher, Scraper, VideoId } from "youtube-live-scraper";
 import { LikeCountFetcher } from "../types";
 import { LikeCount } from "../core/LikeCount";
 
@@ -11,6 +11,6 @@ export const LikeCountFetcherViaScraping: LikeCountFetcher = {
       return undefined;
     }
 
-    return new LikeCount(videoId, new VideoTitle(""), likeCount);
+    return new LikeCount(videoId, likeCount);
   },
 };

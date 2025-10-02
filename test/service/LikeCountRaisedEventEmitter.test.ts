@@ -3,7 +3,7 @@ import type { LikeCountFetcher } from "../../src/types";
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { LikeCount } from "../../src/core/LikeCount";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
-import { ChannelId, VideoId, VideoTitle } from "youtube-live-scraper";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 import { ClosestLiveVideoIdFetcher } from "../../src/service/ClosestLiveVideoIdFetcher";
 
 class FakeLikeCountFetcher implements LikeCountFetcher {
@@ -18,7 +18,7 @@ class FakeLikeCountFetcher implements LikeCountFetcher {
     if (val === undefined) {
       return Promise.resolve(undefined);
     } else {
-      return Promise.resolve(new LikeCount(videoId, new VideoTitle("Video Title"), val));
+      return Promise.resolve(new LikeCount(videoId, val));
     }
   }
 }
@@ -181,13 +181,13 @@ describe("Raised events", () => {
     expect(onRaised).toHaveBeenCalledTimes(2);
     expect(onRaised).toHaveBeenNthCalledWith(
       1,
-      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("Video Title"), 0),
-      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("Video Title"), 5),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 0),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 5),
     );
     expect(onRaised).toHaveBeenNthCalledWith(
       2,
-      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("Video Title"), 5),
-      new LikeCount(new VideoId("VVVVVVVVVVV"), new VideoTitle("Video Title"), 6),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 5),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 6),
     );
   });
 });
