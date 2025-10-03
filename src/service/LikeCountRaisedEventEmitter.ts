@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { LikeCountFetcher, LikeCountRaisedEvent } from "../types";
+import { LikeCountFetcher } from "../types";
 import { LikeCountManager } from "./LikeCountManager";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
@@ -10,6 +10,7 @@ import { ChannelId, VideoId } from "youtube-live-scraper";
 import { LikeCountFetcherViaScraping } from "./LikeCountFetcherViaScraping";
 import { LikeCountFetcherViaYoutubeDataApi } from "./LikeCountFetcherViaYoutubeDataApi";
 import { ClosestLiveVideoIdFetcher } from "./ClosestLiveVideoIdFetcher";
+import { LikeCount } from "../core/LikeCount";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
@@ -123,3 +124,10 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     this.emit("end");
   }
 }
+
+export type LikeCountRaisedEvent = {
+  raised: (before: LikeCount, after: LikeCount) => void;
+  start: () => void;
+  end: () => void;
+  error: (err: Error) => void;
+};

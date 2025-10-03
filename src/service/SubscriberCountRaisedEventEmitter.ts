@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { SubscriberCountFetcher, SubscriberCountRaisedEvent } from "../types";
+import { SubscriberCountFetcher } from "../types";
 import { SubscriberCountManager } from "./SubscriberCountManager";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
@@ -9,6 +9,7 @@ import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import { ChannelId } from "youtube-live-scraper";
 import { SubscriberCountFetcherViaScraping } from "./SubscriberCountFetcherViaScraping";
 import { SubscriberCountFetcherViaYoutubeDataApi } from "./SubscriberCountFetcherViaYoutubeDataApi";
+import { SubscriberCount } from "../core/SubscriberCount";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;
@@ -105,3 +106,9 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     this.emit("end");
   }
 }
+export type SubscriberCountRaisedEvent = {
+  raised: (before: SubscriberCount, after: SubscriberCount) => void;
+  start: () => void;
+  end: () => void;
+  error: (err: Error) => void;
+};
