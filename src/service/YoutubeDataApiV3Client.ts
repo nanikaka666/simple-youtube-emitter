@@ -37,7 +37,7 @@ interface SubscriberCountResponse {
 }
 
 export const YoutubeDataApiV3Client = {
-  async getLikeCount(credential: YoutubeApiKeyCredential, videoId: VideoId) {
+  getLikeCount: async (credential: YoutubeApiKeyCredential, videoId: VideoId) => {
     const query = new URLSearchParams({
       id: videoId.id,
       key: credential.credential,
@@ -55,7 +55,7 @@ export const YoutubeDataApiV3Client = {
     return Number.parseInt((res as LikeCountResponse).items[0].statistics.likeCount);
   },
 
-  async getLiveViewCount(credential: YoutubeApiKeyCredential, videoId: VideoId) {
+  getLiveViewCount: async (credential: YoutubeApiKeyCredential, videoId: VideoId) => {
     const query = new URLSearchParams({
       id: videoId.id,
       key: credential.credential,
@@ -75,7 +75,7 @@ export const YoutubeDataApiV3Client = {
     );
   },
 
-  async getSubscriberCount(credential: YoutubeApiKeyCredential, channelId: ChannelId) {
+  getSubscriberCount: async (credential: YoutubeApiKeyCredential, channelId: ChannelId) => {
     const query = new URLSearchParams({
       ...(channelId.isHandle ? { forHandle: channelId.id } : { id: channelId.id }),
       key: credential.credential,
