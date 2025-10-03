@@ -3,7 +3,7 @@ import type { ChannelApiResponse, IYoutubeDataApiV3, VideoApiResponse } from "..
 import { SafePollingInterval } from "../../src/core/SafePollingInterval";
 import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
 import { SubscriberCount } from "../../src/core/SubscriberCount";
-import { ChannelId, ChannelTitle, VideoId } from "youtube-live-scraper";
+import { ChannelId, VideoId } from "youtube-live-scraper";
 
 class FakeYoutubeApi implements IYoutubeDataApiV3 {
   #channelsCalled: number;
@@ -106,13 +106,13 @@ describe("Raised events", () => {
     expect(onRaised).toHaveBeenCalledTimes(2);
     expect(onRaised).toHaveBeenNthCalledWith(
       1,
-      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 0),
-      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 5),
+      new SubscriberCount(new ChannelId("@ChannelId"), 0),
+      new SubscriberCount(new ChannelId("@ChannelId"), 5),
     );
     expect(onRaised).toHaveBeenNthCalledWith(
       2,
-      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 5),
-      new SubscriberCount(new ChannelId("@ChannelId"), new ChannelTitle("channel title"), 6),
+      new SubscriberCount(new ChannelId("@ChannelId"), 5),
+      new SubscriberCount(new ChannelId("@ChannelId"), 6),
     );
   });
 });

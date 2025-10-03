@@ -9,7 +9,7 @@ import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import { YoutubeDataApiWithScraping } from "../infrastructure/YoutubeDataApiWithScraping";
-import { ChannelId, ChannelTitle } from "youtube-live-scraper";
+import { ChannelId } from "youtube-live-scraper";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;
@@ -46,11 +46,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     try {
       const json = await this.#youtubeDataApi.channels(this.#channelId);
 
-      return new SubscriberCount(
-        this.#channelId,
-        new ChannelTitle(json.items[0].snippet.title),
-        Number(json.items[0].statistics.subscriberCount),
-      );
+      return new SubscriberCount(this.#channelId, Number(json.items[0].statistics.subscriberCount));
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);

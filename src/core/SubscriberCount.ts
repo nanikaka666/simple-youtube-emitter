@@ -1,13 +1,11 @@
-import { ChannelId, ChannelTitle } from "youtube-live-scraper";
+import { ChannelId } from "youtube-live-scraper";
 import { CountBase } from "./CountBase";
 
 export class SubscriberCount extends CountBase {
   readonly channelId: ChannelId;
-  readonly channelTitle: ChannelTitle;
-  constructor(channelId: ChannelId, channelTitle: ChannelTitle, value: number) {
+  constructor(channelId: ChannelId, value: number) {
     super(value);
     this.channelId = channelId;
-    this.channelTitle = channelTitle;
   }
   check(nextSubscriberCount: SubscriberCount) {
     if (this.channelId !== nextSubscriberCount.channelId) {
