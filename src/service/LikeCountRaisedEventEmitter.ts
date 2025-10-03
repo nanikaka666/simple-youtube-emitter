@@ -1,80 +1,78 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { IYoutubeDataApiV3, LikeCountRaisedEvent } from "../types";
-import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
+import { LikeCountFetcher } from "../types";
 import { LikeCountManager } from "./LikeCountManager";
-import { LikeCount } from "../core/LikeCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import {
-  LikeCountUnavailableError,
-  YoutubeDataApiWithScraping,
-} from "./YoutubeDataApiWithScraping";
-import { ChannelId, PageFetcher, VideoId, VideoTitle } from "youtube-live-scraper";
+import { ChannelId, VideoId } from "youtube-live-scraper";
+import { LikeCountFetcherViaScraping } from "./LikeCountFetcherViaScraping";
+import { LikeCountFetcherViaYoutubeDataApi } from "./LikeCountFetcherViaYoutubeDataApi";
+import { ClosestLiveVideoIdFetcher } from "./ClosestLiveVideoIdFetcher";
+import { LikeCount } from "../core/LikeCount";
 
 export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
   readonly #interval: PollingInterval;
-  readonly #youtubeDataApi: IYoutubeDataApiV3;
+  readonly #likeCountFetcher: LikeCountFetcher;
   #likeCountManager?: LikeCountManager;
   #isActivated: boolean;
-  constructor(channelId: ChannelId, interval: PollingInterval, youtubeDataApi: IYoutubeDataApiV3) {
+  constructor(channelId: ChannelId, interval: PollingInterval, likeCountFetcher: LikeCountFetcher) {
     super();
 
     this.#channelId = channelId;
     this.#interval = interval;
-    this.#youtubeDataApi = youtubeDataApi;
+    this.#likeCountFetcher = likeCountFetcher;
     this.#isActivated = false;
   }
   static initWithoutCredential(channelId: string, interval: number) {
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      YoutubeDataApiWithScraping,
+      LikeCountFetcherViaScraping,
     );
   }
   static init(channelId: string, interval: number, credential: string) {
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
+      new LikeCountFetcherViaYoutubeDataApi(new YoutubeApiKeyCredential(credential)),
     );
   }
 
-  async #getVideoId(): Promise<VideoId | undefined> {
+  async #getVideoId() {
     try {
-      const page = await PageFetcher.getLivePage(this.#channelId);
-      if (page.type !== "video") {
+      const res = await ClosestLiveVideoIdFetcher.get(this.#channelId);
+      if (res === undefined) {
         this.emit("error", new Error("This channel has no live-streaming or upcoming live."));
         return undefined;
       }
+      return res;
+    } catch (e) {
+      if (e instanceof Error) {
+        this.emit("error", e);
+      } else {
+        this.emit("error", new Error("Failed to get closest live video id."));
+      }
 
-      return page.videoId;
-    } catch (_err) {
-      this.emit("error", new Error("Failed to get videoId via scraping YouTube page."));
       return undefined;
     }
   }
 
-  async #getLikeCount(videoId: VideoId): Promise<LikeCount | undefined> {
+  async #getLikeCount(videoId: VideoId) {
     try {
-      const json = await this.#youtubeDataApi.videos(videoId);
-
-      return new LikeCount(
-        videoId,
-        new VideoTitle(json.items[0].snippet.title),
-        Number(json.items[0].statistics.likeCount),
-      );
+      return await this.#likeCountFetcher.get(videoId);
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
-      } else if (err instanceof LikeCountUnavailableError) {
+      } else if (err instanceof Error) {
         this.emit("error", err);
       } else {
-        this.emit("error", new Error("Failed to get like count via YouTube videos API."));
+        this.emit("error", new Error("Fail to fetch like count."));
       }
+
+      return undefined;
     }
   }
 
@@ -96,7 +94,7 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     setTimeout(() => this.#execute(), this.#interval.value);
   }
 
-  async start(): Promise<boolean> {
+  async start() {
     if (this.#isActivated) {
       return true;
     }
@@ -126,3 +124,10 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
     this.emit("end");
   }
 }
+
+export type LikeCountRaisedEvent = {
+  raised: (before: LikeCount, after: LikeCount) => void;
+  start: () => void;
+  end: () => void;
+  error: (err: Error) => void;
+};
