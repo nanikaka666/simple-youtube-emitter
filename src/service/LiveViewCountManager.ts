@@ -11,11 +11,7 @@ export class LiveViewCountManager {
    * The parameter which constructor received is used for get the id and its title.
    */
   constructor(initialLiveViewCount: LiveViewCount) {
-    this.#bestSoFar = new LiveViewCount(
-      initialLiveViewCount.videoId,
-      initialLiveViewCount.videoTitle,
-      0,
-    );
+    this.#bestSoFar = new LiveViewCount(initialLiveViewCount.videoId, 0);
   }
   update(nextLiveViewCount: LiveViewCount) {
     if (this.#bestSoFar.check(nextLiveViewCount)) {
