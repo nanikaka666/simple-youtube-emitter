@@ -75,6 +75,6 @@ export interface LiveViewCountFetcher {
   get(videoId: VideoId): Promise<LiveViewCount>;
 }
 
-export interface SubscribeCountFetcher {
+export interface SubscriberCountFetcher {
   get(channelId: ChannelId): Promise<SubscriberCount>;
 }
