@@ -1,28 +1,31 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { IYoutubeDataApiV3, SubscriberCountRaisedEvent } from "../types";
-import { YoutubeDataApiV3 } from "../infrastructure/YoutubeDataApiV3";
+import { SubscriberCountFetcher, SubscriberCountRaisedEvent } from "../types";
 import { SubscriberCountManager } from "./SubscriberCountManager";
-import { SubscriberCount } from "../core/SubscriberCount";
 import { PollingInterval } from "../core/PollingInterval";
 import { SafePollingInterval } from "../core/SafePollingInterval";
 import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
 import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import { YoutubeDataApiWithScraping } from "../infrastructure/YoutubeDataApiWithScraping";
 import { ChannelId } from "youtube-live-scraper";
+import { SubscriberCountFetcherViaScraping } from "./SubscriberCountFetcherViaScraping";
+import { SubscriberCountFetcherViaYoutubeDataApi } from "./SubscriberCountFetcherViaYoutubeDataApi";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;
   readonly #interval: PollingInterval;
-  readonly #youtubeDataApi: IYoutubeDataApiV3;
+  readonly #subscriberCountFetcher: SubscriberCountFetcher;
   #subscriberCountManager?: SubscriberCountManager;
   #isActivated: boolean;
-  constructor(channelId: ChannelId, interval: PollingInterval, youtubeDataApi: IYoutubeDataApiV3) {
+  constructor(
+    channelId: ChannelId,
+    interval: PollingInterval,
+    subscriberCountFetcher: SubscriberCountFetcher,
+  ) {
     super();
 
     this.#channelId = channelId;
     this.#interval = interval;
-    this.#youtubeDataApi = youtubeDataApi;
+    this.#subscriberCountFetcher = subscriberCountFetcher;
     this.#isActivated = false;
   }
 
@@ -30,7 +33,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      YoutubeDataApiWithScraping,
+      SubscriberCountFetcherViaScraping,
     );
   }
 
@@ -38,21 +41,22 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new YoutubeDataApiV3(new YoutubeApiKeyCredential(credential)),
+      new SubscriberCountFetcherViaYoutubeDataApi(new YoutubeApiKeyCredential(credential)),
     );
   }
 
-  async #getSubscriberCount(): Promise<SubscriberCount | undefined> {
+  async #getSubscriberCount() {
     try {
-      const json = await this.#youtubeDataApi.channels(this.#channelId);
-
-      return new SubscriberCount(this.#channelId, Number(json.items[0].statistics.subscriberCount));
+      return await this.#subscriberCountFetcher.get(this.#channelId);
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
+      } else if (err instanceof Error) {
+        this.emit("error", err);
       } else {
-        this.emit("error", new Error("Failed to get subscriber count via YouTube channels API."));
+        this.emit("error", new Error("Failed to get subscriber count."));
       }
+      return undefined;
     }
   }
 
@@ -74,7 +78,7 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
     setTimeout(() => this.#execute(), this.#interval.value);
   }
 
-  async start(): Promise<boolean> {
+  async start() {
     if (this.#isActivated) {
       return true;
     }
