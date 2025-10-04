@@ -3,13 +3,6 @@ import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { LiveViewCount } from "../core/LiveViewCount";
 
-export type LiveViewCountRaisedEvent = {
-  raised: (before: LiveViewCount, after: LiveViewCount) => void;
-  start: () => void;
-  end: () => void;
-  error: (err: Error) => void;
-};
-
 /***********************
  * infrastrucre types
  ***********************/

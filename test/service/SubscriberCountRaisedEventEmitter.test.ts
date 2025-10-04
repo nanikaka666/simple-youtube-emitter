@@ -159,7 +159,7 @@ describe("End events", () => {
   });
 });
 
-describe.only("Error events", () => {
+describe("Error events", () => {
   test.each([new YoutubeApiReturnsError("some reason"), new Error("some reason")])(
     "if an exception was thrown during get subscriber count, 'error' event will be fired.",
     async (exception) => {

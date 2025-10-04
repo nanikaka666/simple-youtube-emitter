@@ -62,7 +62,7 @@ export const YoutubeDataApiV3Client = {
       part: "liveStreamingDetails",
     });
 
-    const url = `${videosApiUrl}?{${query}}`;
+    const url = `${videosApiUrl}?${query}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const res = await fetchAsJson(url);
 
@@ -82,7 +82,7 @@ export const YoutubeDataApiV3Client = {
       part: "statistics",
     });
 
-    const url = `${channelsApiUrl}?{${query}}`;
+    const url = `${channelsApiUrl}?${query}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const res = await fetchAsJson(url);
 
