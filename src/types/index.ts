@@ -3,10 +3,6 @@ import { LikeCount } from "../core/LikeCount";
 import { SubscriberCount } from "../core/SubscriberCount";
 import { LiveViewCount } from "../core/LiveViewCount";
 
-/***********************
- * infrastrucre types
- ***********************/
-
 export interface LikeCountFetcher {
   get(videoId: VideoId): Promise<LikeCount | undefined>;
 }
