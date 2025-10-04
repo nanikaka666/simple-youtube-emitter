@@ -1,10 +1,10 @@
 import { VideoId, ChannelId } from "youtube-live-scraper";
-import { SafePollingInterval } from "../../src/core/SafePollingInterval";
-import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
-import { ClosestLiveVideoIdFetcher } from "../../src/service/ClosestLiveVideoIdFetcher";
-import { LiveViewCountFetcher } from "../../src/types";
-import { LiveViewCount } from "../../src/core/LiveViewCount";
-import { LiveViewCountRaisedEventEmitter } from "../../src/service/LiveViewCountRaisedEventEmitter";
+import { SafePollingInterval } from "../../../src/core/SafePollingInterval";
+import { YoutubeApiReturnsError } from "../../../src/core/YoutubeApiReturnsError";
+import { ClosestLiveVideoIdFetcher } from "../../../src/service/ClosestLiveVideoIdFetcher";
+import { LiveViewCountFetcher } from "../../../src/types";
+import { LiveViewCount } from "../../../src/core/LiveViewCount";
+import { LiveViewCountRaisedEventEmitter } from "../../../src/service/liveViewCount/LiveViewCountRaisedEventEmitter";
 
 class FakeLiveViewCountFetcher implements LiveViewCountFetcher {
   readonly #values: number[];

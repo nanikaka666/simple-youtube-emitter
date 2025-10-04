@@ -1,8 +1,8 @@
 import { VideoId } from "youtube-live-scraper";
-import { YoutubeApiKeyCredential } from "../../src/core/YoutubeApiKeyCredential";
-import { LiveViewCountFetcherViaYoutubeDataApi } from "../../src/service/LiveViewCountFetcherViaYoutubeDataApi";
-import { YoutubeDataApiV3Client } from "../../src/service/YoutubeDataApiV3Client";
-import { LiveViewCount } from "../../src/core/LiveViewCount";
+import { YoutubeApiKeyCredential } from "../../../src/core/YoutubeApiKeyCredential";
+import { YoutubeDataApiV3Client } from "../../../src/service/YoutubeDataApiV3Client";
+import { LiveViewCount } from "../../../src/core/LiveViewCount";
+import { LiveViewCountFetcherViaYoutubeDataApi } from "../../../src/service/liveViewCount/LiveViewCountFetcherViaYoutubeDataApi";
 
 afterEach(() => {
   jest.clearAllMocks();

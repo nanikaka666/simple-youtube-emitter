@@ -1,9 +1,9 @@
-import { SubscriberCountRaisedEventEmitter } from "../../src/service/SubscriberCountRaisedEventEmitter";
-import type { SubscriberCountFetcher } from "../../src/types";
-import { SafePollingInterval } from "../../src/core/SafePollingInterval";
-import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
-import { SubscriberCount } from "../../src/core/SubscriberCount";
+import type { SubscriberCountFetcher } from "../../../src/types";
+import { SafePollingInterval } from "../../../src/core/SafePollingInterval";
+import { YoutubeApiReturnsError } from "../../../src/core/YoutubeApiReturnsError";
+import { SubscriberCount } from "../../../src/core/SubscriberCount";
 import { ChannelId } from "youtube-live-scraper";
+import { SubscriberCountRaisedEventEmitter } from "../../../src";
 
 class FakeSubscriberCountFetcher implements SubscriberCountFetcher {
   readonly #values: number[];

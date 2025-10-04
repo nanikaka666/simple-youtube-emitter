@@ -1,6 +1,6 @@
 import { PageFetcher, Scraper } from "youtube-live-scraper";
-import { LiveViewCountFetcher } from "../types";
-import { LiveViewCount } from "../core/LiveViewCount";
+import { LiveViewCountFetcher } from "../../types";
+import { LiveViewCount } from "../../core/LiveViewCount";
 
 export const LiveViewCountFetcherViaScraping: LiveViewCountFetcher = {
   get: async (videoId) => {

@@ -1,6 +1,6 @@
 import { PageFetcher, Scraper, VideoId } from "youtube-live-scraper";
-import { LikeCountFetcherViaScraping } from "../../src/service/LikeCountFetcherViaScraping";
-import { LikeCount } from "../../src/core/LikeCount";
+import { LikeCount } from "../../../src/core/LikeCount";
+import { LikeCountFetcherViaScraping } from "../../../src/service/likeCount/LikeCountFetcherViaScraping";
 
 afterEach(() => {
   jest.clearAllMocks();

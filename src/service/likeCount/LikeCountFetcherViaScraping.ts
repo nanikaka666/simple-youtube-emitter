@@ -1,6 +1,6 @@
 import { PageFetcher, Scraper, VideoId } from "youtube-live-scraper";
-import { LikeCountFetcher } from "../types";
-import { LikeCount } from "../core/LikeCount";
+import { LikeCountFetcher } from "../../types";
+import { LikeCount } from "../../core/LikeCount";
 
 export const LikeCountFetcherViaScraping: LikeCountFetcher = {
   async get(videoId: VideoId) {

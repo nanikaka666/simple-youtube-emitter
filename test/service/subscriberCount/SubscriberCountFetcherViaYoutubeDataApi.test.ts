@@ -1,9 +1,9 @@
 import { ChannelId } from "youtube-live-scraper";
-import { YoutubeApiKeyCredential } from "../../src/core/YoutubeApiKeyCredential";
-import { SubscriberCountFetcherViaYoutubeDataApi } from "../../src/service/SubscriberCountFetcherViaYoutubeDataApi";
-import { YoutubeDataApiV3Client } from "../../src/service/YoutubeDataApiV3Client";
-import { SubscriberCount } from "../../src/core/SubscriberCount";
-import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
+import { YoutubeApiKeyCredential } from "../../../src/core/YoutubeApiKeyCredential";
+import { YoutubeDataApiV3Client } from "../../../src/service/YoutubeDataApiV3Client";
+import { SubscriberCount } from "../../../src/core/SubscriberCount";
+import { YoutubeApiReturnsError } from "../../../src/core/YoutubeApiReturnsError";
+import { SubscriberCountFetcherViaYoutubeDataApi } from "../../../src/service/subscriberCount/SubscriberCountFetcherViaYoutubeDataApi";
 
 afterEach(() => {
   jest.clearAllMocks();

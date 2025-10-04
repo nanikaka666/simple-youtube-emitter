@@ -1,4 +1,4 @@
-import { SubscriberCount } from "../core/SubscriberCount";
+import { SubscriberCount } from "../../core/SubscriberCount";
 
 export class SubscriberCountManager {
   #bestSoFar: SubscriberCount;

@@ -1,6 +1,6 @@
 import { ChannelId, PageFetcher, Scraper } from "youtube-live-scraper";
-import { SubscriberCountFetcherViaScraping } from "../../src/service/SubscriberCountFetcherViaScraping";
-import { SubscriberCount } from "../../src/core/SubscriberCount";
+import { SubscriberCount } from "../../../src/core/SubscriberCount";
+import { SubscriberCountFetcherViaScraping } from "../../../src/service/subscriberCount/SubscriberCountFetcherViaScraping";
 
 afterEach(() => {
   jest.clearAllMocks();
