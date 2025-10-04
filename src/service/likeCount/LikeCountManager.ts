@@ -1,4 +1,4 @@
-import { LikeCount } from "../core/LikeCount";
+import { LikeCount } from "../../core/LikeCount";
 
 export class LikeCountManager {
   #bestSoFar: LikeCount;

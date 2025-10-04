@@ -1,8 +1,8 @@
 import { ChannelId } from "youtube-live-scraper";
-import { SubscriberCount } from "../core/SubscriberCount";
-import { SubscriberCountFetcher } from "../types";
-import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
-import { YoutubeDataApiV3Client } from "./YoutubeDataApiV3Client";
+import { SubscriberCount } from "../../core/SubscriberCount";
+import { SubscriberCountFetcher } from "../../types";
+import { YoutubeApiKeyCredential } from "../../core/YoutubeApiKeyCredential";
+import { YoutubeDataApiV3Client } from "./../YoutubeDataApiV3Client";
 
 export class SubscriberCountFetcherViaYoutubeDataApi implements SubscriberCountFetcher {
   readonly #credential: YoutubeApiKeyCredential;

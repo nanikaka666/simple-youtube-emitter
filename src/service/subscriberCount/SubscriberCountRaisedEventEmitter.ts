@@ -1,15 +1,15 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { SubscriberCountFetcher } from "../types";
-import { SubscriberCountManager } from "./SubscriberCountManager";
-import { PollingInterval } from "../core/PollingInterval";
-import { SafePollingInterval } from "../core/SafePollingInterval";
-import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
-import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
 import { ChannelId } from "youtube-live-scraper";
 import { SubscriberCountFetcherViaScraping } from "./SubscriberCountFetcherViaScraping";
 import { SubscriberCountFetcherViaYoutubeDataApi } from "./SubscriberCountFetcherViaYoutubeDataApi";
-import { SubscriberCount } from "../core/SubscriberCount";
+import { PollingInterval } from "../../core/PollingInterval";
+import { SafePollingInterval } from "../../core/SafePollingInterval";
+import { SubscriberCount } from "../../core/SubscriberCount";
+import { YoutubeApiKeyCredential } from "../../core/YoutubeApiKeyCredential";
+import { YoutubeApiReturnsError } from "../../core/YoutubeApiReturnsError";
+import { SubscriberCountFetcher } from "../../types";
+import { SubscriberCountManager } from "./SubscriberCountManager";
 
 export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<SubscriberCountRaisedEvent>) {
   readonly #channelId: ChannelId;

@@ -1,47 +1,43 @@
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
+import { LikeCountFetcher } from "../../types";
+import { LikeCountManager } from "./LikeCountManager";
+import { PollingInterval } from "../../core/PollingInterval";
+import { SafePollingInterval } from "../../core/SafePollingInterval";
+import { YoutubeApiKeyCredential } from "../../core/YoutubeApiKeyCredential";
+import { YoutubeApiReturnsError } from "../../core/YoutubeApiReturnsError";
 import { ChannelId, VideoId } from "youtube-live-scraper";
-import { LiveViewCount } from "../core/LiveViewCount";
-import { PollingInterval } from "../core/PollingInterval";
-import { SafePollingInterval } from "../core/SafePollingInterval";
-import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
-import { YoutubeApiReturnsError } from "../core/YoutubeApiReturnsError";
-import { LiveViewCountFetcher } from "../types";
-import { ClosestLiveVideoIdFetcher } from "./ClosestLiveVideoIdFetcher";
-import { LiveViewCountFetcherViaScraping } from "./LiveViewCountFetcherViaScraping";
-import { LiveViewCountFetcherViaYoutubeDataApi } from "./LiveViewCountFetcherViaYoutubeDataApi";
-import { LiveViewCountManager } from "./LiveViewCountManager";
+import { LikeCountFetcherViaScraping } from "./LikeCountFetcherViaScraping";
+import { LikeCountFetcherViaYoutubeDataApi } from "./LikeCountFetcherViaYoutubeDataApi";
+import { ClosestLiveVideoIdFetcher } from "./../ClosestLiveVideoIdFetcher";
+import { LikeCount } from "../../core/LikeCount";
 
-export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LiveViewCountRaisedEvent>) {
+export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => TypedEmitter<LikeCountRaisedEvent>) {
   readonly #channelId: ChannelId;
   readonly #interval: PollingInterval;
-  readonly #liveViewCountFetcher: LiveViewCountFetcher;
-  #liveViewCountManager?: LiveViewCountManager;
+  readonly #likeCountFetcher: LikeCountFetcher;
+  #likeCountManager?: LikeCountManager;
   #isActivated: boolean;
-  constructor(
-    channelId: ChannelId,
-    interval: PollingInterval,
-    liveViewCountFetcher: LiveViewCountFetcher,
-  ) {
+  constructor(channelId: ChannelId, interval: PollingInterval, likeCountFetcher: LikeCountFetcher) {
     super();
 
     this.#channelId = channelId;
     this.#interval = interval;
-    this.#liveViewCountFetcher = liveViewCountFetcher;
+    this.#likeCountFetcher = likeCountFetcher;
     this.#isActivated = false;
   }
   static initWithoutCredential(channelId: string, interval: number) {
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      LiveViewCountFetcherViaScraping,
+      LikeCountFetcherViaScraping,
     );
   }
   static init(channelId: string, interval: number, credential: string) {
     return new this(
       new ChannelId(channelId),
       new SafePollingInterval(interval),
-      new LiveViewCountFetcherViaYoutubeDataApi(new YoutubeApiKeyCredential(credential)),
+      new LikeCountFetcherViaYoutubeDataApi(new YoutubeApiKeyCredential(credential)),
     );
   }
 
@@ -64,16 +60,16 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
     }
   }
 
-  async #getLiveViewCount(videoId: VideoId) {
+  async #getLikeCount(videoId: VideoId) {
     try {
-      return await this.#liveViewCountFetcher.get(videoId);
+      return await this.#likeCountFetcher.get(videoId);
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
       } else if (err instanceof Error) {
         this.emit("error", err);
       } else {
-        this.emit("error", new Error("Fail to fetch live view count."));
+        this.emit("error", new Error("Fail to fetch like count."));
       }
 
       return undefined;
@@ -84,18 +80,16 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
     if (!this.#isActivated) {
       return;
     }
-    if (this.#liveViewCountManager === undefined) {
+    if (this.#likeCountManager === undefined) {
       throw new Error("This method is called before initialization of manager.");
     }
-    const nextLiveViewCount = await this.#getLiveViewCount(
-      this.#liveViewCountManager.get().videoId,
-    );
-    if (nextLiveViewCount === undefined) {
+    const nextLikeCount = await this.#getLikeCount(this.#likeCountManager.get().videoId);
+    if (nextLikeCount === undefined) {
       return;
     }
-    const currentLiveViewCount = this.#liveViewCountManager.get();
-    if (this.#liveViewCountManager.update(nextLiveViewCount)) {
-      this.emit("raised", currentLiveViewCount, nextLiveViewCount);
+    const currentLikeCount = this.#likeCountManager.get();
+    if (this.#likeCountManager.update(nextLikeCount)) {
+      this.emit("raised", currentLikeCount, nextLikeCount);
     }
     setTimeout(() => this.#execute(), this.#interval.value);
   }
@@ -108,12 +102,12 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
     if (videoId === undefined) {
       return false;
     }
-    const initialLiveViewCount = await this.#getLiveViewCount(videoId);
-    if (initialLiveViewCount === undefined) {
+    const initialLikeCount = await this.#getLikeCount(videoId);
+    if (initialLikeCount === undefined) {
       return false;
     }
 
-    this.#liveViewCountManager = new LiveViewCountManager(initialLiveViewCount);
+    this.#likeCountManager = new LikeCountManager(initialLikeCount);
 
     setTimeout(() => this.#execute(), this.#interval.value);
 
@@ -131,8 +125,8 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
   }
 }
 
-export type LiveViewCountRaisedEvent = {
-  raised: (before: LiveViewCount, after: LiveViewCount) => void;
+export type LikeCountRaisedEvent = {
+  raised: (before: LikeCount, after: LikeCount) => void;
   start: () => void;
   end: () => void;
   error: (err: Error) => void;

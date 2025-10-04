@@ -1,10 +1,10 @@
-import { LikeCountRaisedEventEmitter } from "../../src/service/LikeCountRaisedEventEmitter";
-import type { LikeCountFetcher } from "../../src/types";
-import { SafePollingInterval } from "../../src/core/SafePollingInterval";
-import { LikeCount } from "../../src/core/LikeCount";
-import { YoutubeApiReturnsError } from "../../src/core/YoutubeApiReturnsError";
+import type { LikeCountFetcher } from "../../../src/types";
+import { SafePollingInterval } from "../../../src/core/SafePollingInterval";
+import { LikeCount } from "../../../src/core/LikeCount";
+import { YoutubeApiReturnsError } from "../../../src/core/YoutubeApiReturnsError";
 import { ChannelId, VideoId } from "youtube-live-scraper";
-import { ClosestLiveVideoIdFetcher } from "../../src/service/ClosestLiveVideoIdFetcher";
+import { ClosestLiveVideoIdFetcher } from "../../../src/service/ClosestLiveVideoIdFetcher";
+import { LikeCountRaisedEventEmitter } from "../../../src";
 
 class FakeLikeCountFetcher implements LikeCountFetcher {
   readonly #values: (number | undefined)[];

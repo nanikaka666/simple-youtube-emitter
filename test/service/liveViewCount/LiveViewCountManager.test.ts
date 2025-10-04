@@ -1,6 +1,6 @@
 import { VideoId } from "youtube-live-scraper";
-import { LiveViewCountManager } from "../../src/service/LiveViewCountManager";
-import { LiveViewCount } from "../../src/core/LiveViewCount";
+import { LiveViewCount } from "../../../src/core/LiveViewCount";
+import { LiveViewCountManager } from "../../../src/service/liveViewCount/LiveViewCountManager";
 
 const videoId = new VideoId("abcdefghijk");
 

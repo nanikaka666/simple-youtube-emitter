@@ -1,6 +1,6 @@
 import { ChannelId } from "youtube-live-scraper";
-import { SubscriberCount } from "../../src/core/SubscriberCount";
-import { SubscriberCountManager } from "../../src/service/SubscriberCountManager";
+import { SubscriberCount } from "../../../src/core/SubscriberCount";
+import { SubscriberCountManager } from "../../../src/service/subscriberCount/SubscriberCountManager";
 
 const channelId = new ChannelId("@example");
 

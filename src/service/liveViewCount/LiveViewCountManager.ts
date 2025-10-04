@@ -1,4 +1,4 @@
-import { LiveViewCount } from "../core/LiveViewCount";
+import { LiveViewCount } from "../../core/LiveViewCount";
 
 export class LiveViewCountManager {
   #bestSoFar: LiveViewCount;

@@ -1,8 +1,8 @@
 import { VideoId } from "youtube-live-scraper";
-import { LikeCount } from "../core/LikeCount";
-import { LikeCountFetcher } from "../types";
-import { YoutubeApiKeyCredential } from "../core/YoutubeApiKeyCredential";
-import { YoutubeDataApiV3Client } from "./YoutubeDataApiV3Client";
+import { LikeCount } from "../../core/LikeCount";
+import { LikeCountFetcher } from "../../types";
+import { YoutubeApiKeyCredential } from "../../core/YoutubeApiKeyCredential";
+import { YoutubeDataApiV3Client } from "./../YoutubeDataApiV3Client";
 
 export class LikeCountFetcherViaYoutubeDataApi implements LikeCountFetcher {
   readonly #credential: YoutubeApiKeyCredential;
