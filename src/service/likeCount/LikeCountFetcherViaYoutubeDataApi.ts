@@ -10,9 +10,10 @@ export class LikeCountFetcherViaYoutubeDataApi implements LikeCountFetcher {
     this.#credential = credential;
   }
   async get(videoId: VideoId) {
-    return new LikeCount(
-      videoId,
-      await YoutubeDataApiV3Client.getLikeCount(this.#credential, videoId),
-    );
+    const likeCount = await YoutubeDataApiV3Client.getLikeCount(this.#credential, videoId);
+    if (likeCount === undefined) {
+      return undefined;
+    }
+    return new LikeCount(videoId, likeCount);
   }
 }

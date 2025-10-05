@@ -11,9 +11,7 @@ afterEach(() => {
 
 describe("get", () => {
   test("get like count correctly.", async () => {
-    jest
-      .spyOn(YoutubeDataApiV3Client, "getLikeCount")
-      .mockImplementation(jest.fn(() => Promise.resolve(888)));
+    jest.spyOn(YoutubeDataApiV3Client, "getLikeCount").mockResolvedValue(888);
 
     const fetcher = new LikeCountFetcherViaYoutubeDataApi(
       new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
@@ -30,12 +28,20 @@ describe("get", () => {
     );
   });
 
-  test("if an exception was thrown by V3Client, the exception will be thrown as it.", () => {
-    jest.spyOn(YoutubeDataApiV3Client, "getLikeCount").mockImplementation(
-      jest.fn(() => {
-        throw new YoutubeApiReturnsError("some reason");
-      }),
+  test("if the channel set like count invisible, undefined will be returned.", async () => {
+    jest.spyOn(YoutubeDataApiV3Client, "getLikeCount").mockResolvedValue(undefined);
+
+    const fetcher = new LikeCountFetcherViaYoutubeDataApi(
+      new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
     );
+
+    expect(await fetcher.get(new VideoId("VVVVVVVVVVV"))).toEqual(undefined);
+  });
+
+  test("if an exception was thrown by V3Client, the exception will be thrown as it.", () => {
+    jest
+      .spyOn(YoutubeDataApiV3Client, "getLikeCount")
+      .mockRejectedValue(new YoutubeApiReturnsError("some reason"));
 
     const fetcher = new LikeCountFetcherViaYoutubeDataApi(
       new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
