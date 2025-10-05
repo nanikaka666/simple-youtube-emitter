@@ -71,17 +71,16 @@ describe("getLikeCount", () => {
 
 describe("getLiveViewCount", () => {
   test("live view count correctly fetched.", async () => {
-    jest.spyOn(fetch, "fetchAsJson").mockReturnValue(
-      Promise.resolve({
-        items: [
-          {
-            liveStreamingDetails: {
-              concurrentViewers: "333",
-            },
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      items: [
+        {
+          liveStreamingDetails: {
+            concurrentViewers: "333",
+            actualStartTime: "2025-10-01T00:00:00Z",
           },
-        ],
-      }),
-    );
+        },
+      ],
+    });
 
     expect(
       await YoutubeDataApiV3Client.getLiveViewCount(
@@ -98,6 +97,42 @@ describe("getLiveViewCount", () => {
     expect(passedUrl).toContain("id=VVVVVVVVVVV");
     expect(passedUrl).toContain("key=credentialcredentialcredentialcredentia");
     expect(passedUrl).toContain("part=liveStreamingDetails");
+  });
+
+  test("if the live has not been begun, return 0.", async () => {
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      items: [
+        {
+          liveStreamingDetails: {
+            actualStartTime: "2025-10-01T00:00:00Z",
+          },
+        },
+      ],
+    });
+
+    expect(
+      await YoutubeDataApiV3Client.getLiveViewCount(
+        new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
+        new VideoId("VVVVVVVVVVV"),
+      ),
+    ).toEqual(undefined);
+  });
+
+  test("if live view count is set invisible, undefined will be thrown.", async () => {
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      items: [
+        {
+          liveStreamingDetails: {},
+        },
+      ],
+    });
+
+    expect(
+      await YoutubeDataApiV3Client.getLiveViewCount(
+        new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
+        new VideoId("VVVVVVVVVVV"),
+      ),
+    ).toEqual(0);
   });
 
   test("if Youtube API returned error json, an exception will be thrown.", () => {

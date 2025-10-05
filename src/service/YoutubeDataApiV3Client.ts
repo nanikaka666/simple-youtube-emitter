@@ -20,7 +20,8 @@ interface LiveViewCountResponse {
   items: [
     {
       liveStreamingDetails: {
-        concurrentViewers: string;
+        concurrentViewers?: string;
+        actualStartTime?: string;
       };
     },
   ];
@@ -52,15 +53,20 @@ export const YoutubeDataApiV3Client = {
       throw new YoutubeApiReturnsError(JSON.stringify(res));
     }
 
-    const typedRes = res as LikeCountResponse;
+    const { statistics } = (res as LikeCountResponse).items[0];
 
-    if (typedRes.items[0].statistics.likeCount === undefined) {
+    if (statistics.likeCount === undefined) {
       return undefined;
     }
 
-    return Number.parseInt(typedRes.items[0].statistics.likeCount);
+    return Number.parseInt(statistics.likeCount);
   },
 
+  /**
+   * Return `0` include meaning of the live has not been begun.
+   *
+   * Return `undefined` means eigher live view count is invisible or the live has been finished.
+   */
   getLiveViewCount: async (credential: YoutubeApiKeyCredential, videoId: VideoId) => {
     const query = new URLSearchParams({
       id: videoId.id,
@@ -76,9 +82,15 @@ export const YoutubeDataApiV3Client = {
       throw new YoutubeApiReturnsError(JSON.stringify(res));
     }
 
-    return Number.parseInt(
-      (res as LiveViewCountResponse).items[0].liveStreamingDetails.concurrentViewers,
-    );
+    const { liveStreamingDetails } = (res as LiveViewCountResponse).items[0];
+
+    if (liveStreamingDetails.actualStartTime === undefined) {
+      return 0;
+    } else if (liveStreamingDetails.concurrentViewers === undefined) {
+      return undefined;
+    } else {
+      return Number.parseInt(liveStreamingDetails.concurrentViewers);
+    }
   },
 
   getSubscriberCount: async (credential: YoutubeApiKeyCredential, channelId: ChannelId) => {
