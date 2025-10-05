@@ -11,10 +11,22 @@ describe("get", () => {
     jest
       .spyOn(PageFetcher, "getVideoPage")
       .mockImplementation(jest.fn(() => Promise.resolve({ type: "video" })) as jest.Mock);
+    jest.spyOn(Scraper, "isLiveNow").mockReturnValue(true);
     jest.spyOn(Scraper, "getLiveViewCount").mockReturnValue(123);
 
     expect(await LiveViewCountFetcherViaScraping.get(new VideoId("VVVVVVVVVVV"))).toEqual(
       new LiveViewCount(new VideoId("VVVVVVVVVVV"), 123),
+    );
+  });
+
+  test("if the live has not been begun, return 0.", async () => {
+    jest
+      .spyOn(PageFetcher, "getVideoPage")
+      .mockImplementation(jest.fn(() => Promise.resolve({ type: "video" })) as jest.Mock);
+    jest.spyOn(Scraper, "isLiveNow").mockReturnValue(false);
+
+    expect(await LiveViewCountFetcherViaScraping.get(new VideoId("VVVVVVVVVVV"))).toEqual(
+      new LiveViewCount(new VideoId("VVVVVVVVVVV"), 0),
     );
   });
 
