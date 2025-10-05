@@ -246,6 +246,26 @@ describe("Raised events", () => {
       new LikeCount(new VideoId("VVVVVVVVVVV"), 6),
     );
   });
+
+  test("if the emitter is closed, extra 'raised' event will be not fired.", async () => {
+    jest.spyOn(ClosestLiveVideoIdFetcher, "get").mockResolvedValue(new VideoId("VVVVVVVVVVV"));
+
+    const emitter = new LikeCountRaisedEventEmitter(
+      new ChannelId("@channelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeLikeCountFetcher([0, 1, 2]),
+    );
+
+    const onRaised = jest.fn();
+    emitter.on("raised", onRaised);
+
+    await emitter.start();
+    await jest.advanceTimersToNextTimerAsync();
+    emitter.close();
+    expect(onRaised).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersToNextTimerAsync();
+    expect(onRaised).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("End events", () => {

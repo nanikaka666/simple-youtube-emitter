@@ -153,6 +153,24 @@ describe("Raised events", () => {
       new SubscriberCount(new ChannelId("@ChannelId"), 6),
     );
   });
+
+  test("if the emitter is closed, extra 'raised' event will be not fired.", async () => {
+    const emitter = new SubscriberCountRaisedEventEmitter(
+      new ChannelId("@ChannelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeSubscriberCountFetcher([0, 1, 2]),
+    );
+
+    const onRaised = jest.fn();
+    emitter.on("raised", onRaised);
+
+    await emitter.start();
+    await jest.advanceTimersToNextTimerAsync();
+    emitter.close();
+    expect(onRaised).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersToNextTimerAsync();
+    expect(onRaised).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("End events", () => {
