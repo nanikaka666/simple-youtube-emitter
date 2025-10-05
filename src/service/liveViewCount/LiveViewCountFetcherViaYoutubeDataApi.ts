@@ -10,9 +10,10 @@ export class LiveViewCountFetcherViaYoutubeDataApi implements LiveViewCountFetch
     this.#credential = credential;
   }
   async get(videoId: VideoId) {
-    return new LiveViewCount(
-      videoId,
-      await YoutubeDataApiV3Client.getLiveViewCount(this.#credential, videoId),
-    );
+    const liveViewCount = await YoutubeDataApiV3Client.getLiveViewCount(this.#credential, videoId);
+    if (liveViewCount === undefined) {
+      return undefined;
+    }
+    return new LiveViewCount(videoId, liveViewCount);
   }
 }

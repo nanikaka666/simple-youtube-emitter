@@ -26,6 +26,16 @@ describe("get", () => {
     );
   });
 
+  test("if live view count is set invisible, return undefined.", async () => {
+    jest.spyOn(YoutubeDataApiV3Client, "getLiveViewCount").mockResolvedValue(undefined);
+
+    const fetcher = new LiveViewCountFetcherViaYoutubeDataApi(
+      new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
+    );
+
+    expect(await fetcher.get(new VideoId("VVVVVVVVVVV"))).toEqual(undefined);
+  });
+
   test("if an exception was thrown during api connection, the exception will be thrown as it.", () => {
     jest
       .spyOn(YoutubeDataApiV3Client, "getLiveViewCount")
