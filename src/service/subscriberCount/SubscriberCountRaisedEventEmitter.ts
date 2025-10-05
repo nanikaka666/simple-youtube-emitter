@@ -69,12 +69,11 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
       throw new Error("This method is called before initialization of manager.");
     }
     const nextSubscriberCount = await this.#getSubscriberCount();
-    if (nextSubscriberCount === undefined) {
-      return;
-    }
-    const currentSubscribeCount = this.#subscriberCountManager.get();
-    if (this.#subscriberCountManager.update(nextSubscriberCount)) {
-      this.emit("raised", currentSubscribeCount, nextSubscriberCount);
+    if (nextSubscriberCount !== undefined) {
+      const currentSubscribeCount = this.#subscriberCountManager.get();
+      if (this.#subscriberCountManager.update(nextSubscriberCount)) {
+        this.emit("raised", currentSubscribeCount, nextSubscriberCount);
+      }
     }
     setTimeout(() => this.#execute(), this.#interval.value);
   }
@@ -82,6 +81,9 @@ export class SubscriberCountRaisedEventEmitter extends (EventEmitter as new () =
   async start() {
     if (this.#isActivated) {
       return true;
+    }
+    if (this.#subscriberCountManager !== undefined) {
+      return false;
     }
 
     const initialSubscriberCount = await this.#getSubscriberCount();

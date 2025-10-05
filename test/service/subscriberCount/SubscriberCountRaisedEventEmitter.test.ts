@@ -6,14 +6,19 @@ import { ChannelId } from "youtube-live-scraper";
 import { SubscriberCountRaisedEventEmitter } from "../../../src";
 
 class FakeSubscriberCountFetcher implements SubscriberCountFetcher {
-  readonly #values: number[];
+  readonly #values: (number | Error)[];
   #calledNum: number;
-  constructor(values: number[]) {
+  constructor(values: (number | Error)[]) {
     this.#values = values;
     this.#calledNum = 0;
   }
   async get(channelId: ChannelId) {
-    return Promise.resolve(new SubscriberCount(channelId, this.#values[this.#calledNum++]));
+    const val = this.#values[this.#calledNum++];
+    if (val instanceof Error) {
+      return Promise.reject(val);
+    } else {
+      return Promise.resolve(new SubscriberCount(channelId, val));
+    }
   }
 }
 
@@ -62,11 +67,7 @@ describe("Start events", () => {
     const emitter = new SubscriberCountRaisedEventEmitter(
       new ChannelId("@ChannelId"),
       new SafePollingInterval(10 * 1000),
-      new (class implements SubscriberCountFetcher {
-        get(_: ChannelId): Promise<SubscriberCount> {
-          throw new Error();
-        }
-      })(),
+      new FakeSubscriberCountFetcher([new Error()]),
     );
 
     const onStart = jest.fn();
@@ -75,6 +76,22 @@ describe("Start events", () => {
 
     expect(await emitter.start()).toEqual(false);
     expect(onStart).toHaveBeenCalledTimes(0);
+  });
+
+  test("if start() called after close() call, 'start' event never fired again.", async () => {
+    const emitter = new SubscriberCountRaisedEventEmitter(
+      new ChannelId("@ChannelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeSubscriberCountFetcher([0]),
+    );
+
+    const onStart = jest.fn();
+    emitter.on("start", onStart);
+
+    await emitter.start();
+    expect(onStart).toHaveBeenCalledTimes(1);
+    emitter.close();
+    expect(onStart).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -91,6 +108,35 @@ describe("Raised events", () => {
 
     await emitter.start();
     await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+
+    expect(onRaised).toHaveBeenCalledTimes(2);
+    expect(onRaised).toHaveBeenNthCalledWith(
+      1,
+      new SubscriberCount(new ChannelId("@ChannelId"), 0),
+      new SubscriberCount(new ChannelId("@ChannelId"), 5),
+    );
+    expect(onRaised).toHaveBeenNthCalledWith(
+      2,
+      new SubscriberCount(new ChannelId("@ChannelId"), 5),
+      new SubscriberCount(new ChannelId("@ChannelId"), 6),
+    );
+  });
+
+  test("even if unfortunately couldn't get like counts in sequence, the process will be continued.", async () => {
+    const emitter = new SubscriberCountRaisedEventEmitter(
+      new ChannelId("@ChannelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeSubscriberCountFetcher([0, 5, new Error(), 6]),
+    );
+
+    const onRaised = jest.fn();
+    emitter.on("raised", onRaised);
+    emitter.on("error", jest.fn()); // to avoid Unhandled error.
+
+    await emitter.start();
     await jest.advanceTimersToNextTimerAsync();
     await jest.advanceTimersToNextTimerAsync();
     await jest.advanceTimersToNextTimerAsync();
@@ -166,11 +212,7 @@ describe("Error events", () => {
       const emitter = new SubscriberCountRaisedEventEmitter(
         new ChannelId("@ChannelId"),
         new SafePollingInterval(10 * 1000),
-        new (class implements SubscriberCountFetcher {
-          get(_: ChannelId): Promise<SubscriberCount> {
-            throw exception;
-          }
-        })(),
+        new FakeSubscriberCountFetcher([exception]),
       );
 
       const onError = jest.fn();
