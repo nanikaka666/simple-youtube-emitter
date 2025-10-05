@@ -5,6 +5,9 @@ import { LiveViewCount } from "../../core/LiveViewCount";
 export const LiveViewCountFetcherViaScraping: LiveViewCountFetcher = {
   get: async (videoId) => {
     const page = await PageFetcher.getVideoPage(videoId);
-    return new LiveViewCount(videoId, Scraper.getLiveViewCount(page));
+    if (Scraper.isLiveNow(page)) {
+      return new LiveViewCount(videoId, Scraper.getLiveViewCount(page));
+    }
+    return new LiveViewCount(videoId, 0);
   },
 };

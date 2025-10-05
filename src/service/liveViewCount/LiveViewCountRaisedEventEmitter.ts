@@ -66,7 +66,12 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
 
   async #getLiveViewCount(videoId: VideoId) {
     try {
-      return await this.#liveViewCountFetcher.get(videoId);
+      const liveViewCount = await this.#liveViewCountFetcher.get(videoId);
+      if (liveViewCount === undefined) {
+        this.emit("error", new Error("Fail to fetch live view count, the owner set it invisible."));
+        return undefined;
+      }
+      return liveViewCount;
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
@@ -90,12 +95,11 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
     const nextLiveViewCount = await this.#getLiveViewCount(
       this.#liveViewCountManager.get().videoId,
     );
-    if (nextLiveViewCount === undefined) {
-      return;
-    }
-    const currentLiveViewCount = this.#liveViewCountManager.get();
-    if (this.#liveViewCountManager.update(nextLiveViewCount)) {
-      this.emit("raised", currentLiveViewCount, nextLiveViewCount);
+    if (nextLiveViewCount !== undefined) {
+      const currentLiveViewCount = this.#liveViewCountManager.get();
+      if (this.#liveViewCountManager.update(nextLiveViewCount)) {
+        this.emit("raised", currentLiveViewCount, nextLiveViewCount);
+      }
     }
     setTimeout(() => this.#execute(), this.#interval.value);
   }
@@ -103,6 +107,9 @@ export class LiveViewCountRaisedEventEmitter extends (EventEmitter as new () => 
   async start() {
     if (this.#isActivated) {
       return true;
+    }
+    if (this.#liveViewCountManager !== undefined) {
+      return false;
     }
     const videoId = await this.#getVideoId();
     if (videoId === undefined) {
