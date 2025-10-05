@@ -11,7 +11,12 @@ export interface LikeCountFetcher {
 }
 
 export interface LiveViewCountFetcher {
-  get(videoId: VideoId): Promise<LiveViewCount>;
+  /**
+   * If owner set live view count to invisible, then `undefined` will be returned.
+   *
+   * Return `0` when before the live stream begin, even if waiting listeners are there.
+   */
+  get(videoId: VideoId): Promise<LiveViewCount | undefined>;
 }
 
 export interface SubscriberCountFetcher {
