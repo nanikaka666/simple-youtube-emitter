@@ -62,7 +62,12 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
 
   async #getLikeCount(videoId: VideoId) {
     try {
-      return await this.#likeCountFetcher.get(videoId);
+      const likeCount = await this.#likeCountFetcher.get(videoId);
+      if (likeCount === undefined) {
+        this.emit("error", new Error("Fail to fetch like count. Owner set as invisible."));
+        return undefined;
+      }
+      return likeCount;
     } catch (err) {
       if (err instanceof YoutubeApiReturnsError) {
         this.emit("error", err);
@@ -84,12 +89,11 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
       throw new Error("This method is called before initialization of manager.");
     }
     const nextLikeCount = await this.#getLikeCount(this.#likeCountManager.get().videoId);
-    if (nextLikeCount === undefined) {
-      return;
-    }
-    const currentLikeCount = this.#likeCountManager.get();
-    if (this.#likeCountManager.update(nextLikeCount)) {
-      this.emit("raised", currentLikeCount, nextLikeCount);
+    if (nextLikeCount !== undefined) {
+      const currentLikeCount = this.#likeCountManager.get();
+      if (this.#likeCountManager.update(nextLikeCount)) {
+        this.emit("raised", currentLikeCount, nextLikeCount);
+      }
     }
     setTimeout(() => this.#execute(), this.#interval.value);
   }
@@ -97,6 +101,9 @@ export class LikeCountRaisedEventEmitter extends (EventEmitter as new () => Type
   async start() {
     if (this.#isActivated) {
       return true;
+    }
+    if (this.#likeCountManager !== undefined) {
+      return false;
     }
     const videoId = await this.#getVideoId();
     if (videoId === undefined) {

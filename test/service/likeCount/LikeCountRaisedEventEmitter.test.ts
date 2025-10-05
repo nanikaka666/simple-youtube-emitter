@@ -125,6 +125,7 @@ describe("Start events", () => {
 
     const onStart = jest.fn();
     emitter.on("start", onStart);
+    emitter.on("error", jest.fn()); // to avoid Unhandled error.
 
     expect(await emitter.start()).toEqual(false);
     expect(onStart).toHaveBeenCalledTimes(0);
@@ -155,10 +156,32 @@ describe("Start events", () => {
       expect(onStart).toHaveBeenCalledTimes(0);
     },
   );
+
+  test("if start() called after close() call, 'start' event never fired again.", async () => {
+    jest
+      .spyOn(ClosestLiveVideoIdFetcher, "get")
+      .mockImplementation(jest.fn(() => Promise.resolve(new VideoId("VVVVVVVVVVV"))));
+
+    const emitter = new LikeCountRaisedEventEmitter(
+      new ChannelId("@channelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeLikeCountFetcher([0]),
+    );
+
+    const onStart = jest.fn();
+    emitter.on("start", onStart);
+
+    await emitter.start();
+    emitter.close(); // this emitter is closed.
+
+    expect(onStart).toHaveBeenCalledTimes(1); // check before second start() call.
+    expect(await emitter.start()).toEqual(false);
+    expect(onStart).toHaveBeenCalledTimes(1); // don't increase.
+  });
 });
 
 describe("Raised events", () => {
-  test("Raised event will be fired correctly.", async () => {
+  test("'raised' event will be fired correctly.", async () => {
     jest
       .spyOn(ClosestLiveVideoIdFetcher, "get")
       .mockImplementation(jest.fn(() => Promise.resolve(new VideoId("VVVVVVVVVVV"))));
@@ -174,6 +197,39 @@ describe("Raised events", () => {
 
     await emitter.start();
     await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+    await jest.advanceTimersToNextTimerAsync();
+
+    expect(onRaised).toHaveBeenCalledTimes(2);
+    expect(onRaised).toHaveBeenNthCalledWith(
+      1,
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 0),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 5),
+    );
+    expect(onRaised).toHaveBeenNthCalledWith(
+      2,
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 5),
+      new LikeCount(new VideoId("VVVVVVVVVVV"), 6),
+    );
+  });
+
+  test("even if unfortunately couldn't get like counts in sequence, the process will be continued.", async () => {
+    jest
+      .spyOn(ClosestLiveVideoIdFetcher, "get")
+      .mockImplementation(jest.fn(() => Promise.resolve(new VideoId("VVVVVVVVVVV"))));
+
+    const emitter = new LikeCountRaisedEventEmitter(
+      new ChannelId("@channelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeLikeCountFetcher([0, 5, undefined, 6]), // this sequence fire raised event two times.
+    );
+
+    const onRaised = jest.fn();
+    emitter.on("raised", onRaised);
+    emitter.on("error", jest.fn()); // to avoid Unhandled error.
+
+    await emitter.start();
     await jest.advanceTimersToNextTimerAsync();
     await jest.advanceTimersToNextTimerAsync();
     await jest.advanceTimersToNextTimerAsync();
@@ -315,4 +371,22 @@ describe("Error events", () => {
       expect(onError).toHaveBeenCalledWith(exception);
     },
   );
+
+  test("if the channel set like count invisible, 'error' event will be fired.", async () => {
+    jest
+      .spyOn(ClosestLiveVideoIdFetcher, "get")
+      .mockImplementation(jest.fn(() => Promise.resolve(new VideoId("VVVVVVVVVVV"))));
+
+    const emitter = new LikeCountRaisedEventEmitter(
+      new ChannelId("@channelId"),
+      new SafePollingInterval(10 * 1000),
+      new FakeLikeCountFetcher([undefined]),
+    );
+
+    const onError = jest.fn();
+    emitter.on("error", onError);
+
+    await emitter.start();
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
 });
