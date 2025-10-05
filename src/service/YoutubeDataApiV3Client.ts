@@ -10,7 +10,7 @@ interface LikeCountResponse {
   items: [
     {
       statistics: {
-        likeCount: string;
+        likeCount?: string;
       };
     },
   ];
@@ -52,7 +52,13 @@ export const YoutubeDataApiV3Client = {
       throw new YoutubeApiReturnsError(JSON.stringify(res));
     }
 
-    return Number.parseInt((res as LikeCountResponse).items[0].statistics.likeCount);
+    const typedRes = res as LikeCountResponse;
+
+    if (typedRes.items[0].statistics.likeCount === undefined) {
+      return undefined;
+    }
+
+    return Number.parseInt(typedRes.items[0].statistics.likeCount);
   },
 
   getLiveViewCount: async (credential: YoutubeApiKeyCredential, videoId: VideoId) => {

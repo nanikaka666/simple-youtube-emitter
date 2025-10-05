@@ -10,17 +10,15 @@ afterEach(() => {
 
 describe("getLikeCount", () => {
   test("like count correctly fetched.", async () => {
-    jest.spyOn(fetch, "fetchAsJson").mockReturnValue(
-      Promise.resolve({
-        items: [
-          {
-            statistics: {
-              likeCount: "180",
-            },
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      items: [
+        {
+          statistics: {
+            likeCount: "180",
           },
-        ],
-      }),
-    );
+        },
+      ],
+    });
 
     expect(
       await YoutubeDataApiV3Client.getLikeCount(
@@ -39,12 +37,27 @@ describe("getLikeCount", () => {
     expect(passedUrl).toContain("part=statistics");
   });
 
+  test("if like count key not founded, `undefined` will be returned.", async () => {
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      items: [
+        {
+          statistics: {},
+        },
+      ],
+    });
+
+    expect(
+      await YoutubeDataApiV3Client.getLikeCount(
+        new YoutubeApiKeyCredential("credentialcredentialcredentialcredentia"),
+        new VideoId("VVVVVVVVVVV"),
+      ),
+    ).toEqual(undefined);
+  });
+
   test("if Youtube API returned error json, an exception will be thrown.", () => {
-    jest.spyOn(fetch, "fetchAsJson").mockReturnValue(
-      Promise.resolve({
-        error: "some reason",
-      }),
-    );
+    jest.spyOn(fetch, "fetchAsJson").mockResolvedValue({
+      error: "some reason",
+    });
 
     expect(
       async () =>
